@@ -1,0 +1,239 @@
+把你之前洞察出来的功能和约束，放入features章节，放在Architectures前面，因为架构是为了features 服务的。同时也能更好的检查架构是否保证业务特性
+
+---
+
+把你之前洞察出来的功能和约束，放入features章节，放在Architectures前面，因为架构是为了features 服务的。同时也能更好的检查架构是否保证业务特性
+
+---
+
+功能要做什么
+核心不是“写一段早报”，而是做一个可运行的 Agent 原型：
+
+读取 inputs/profile.json、calendar.json、emails.json、news.json。
+生成根目录下的 briefing.txt 和 briefing.json。
+briefing.txt 是给 TTS 读的英文纯文本。
+briefing.json 要解释：用了哪些 calendar/email/news ids、估算朗读秒数和方法、章节范围、主动丢弃了哪些 item 及原因。
+还要交 DECISIONS.md 和运行说明 README.md。
+系统应该能复跑，不能靠手工拼最终答案糊弄。
+硬约束
+最容易扣分的约束是这些：
+
+输出简报必须是 英文，不是中文。
+briefing.txt 不能有 Markdown、URL、邮箱地址。
+数字和单位要口语化：比如 four billion dollars，不是 $4B。
+控制在 60–90 秒，目标 75 秒。实际大概就是 180–210 个英文词左右。
+不能伪造输入，最终输出必须基于原始 inputs/。
+API key 如果用外部模型，必须走环境变量。
+private / sensitive 信息不能泄露。
+开头不能每天都 Good morning。
+DECISIONS.md 里要诚实写取舍，不要假装全自动完美。
+数据里的小情况
+我确认下来，主要坑有这些：
+
+cal_006 和 cal_007 有十五分钟冲突：Maya 电话和客户访谈重叠。
+cal_011 是 private，只能泛化提醒，不能展开。
+em_020 是医疗预约确认，虽然和五点 private appointment 对得上，但不适合在语音简报里明说医疗细节。
+em_009 是 Plaid credential rotation，action-required，而且 Jordan 是 owner。
+em_011 是 PSD3 final text，action-required，且和三点合规会议直接相关。
+em_001 对应两点 board prep，CEO 要 Jordan 两点前看 slides eight through fourteen。
+em_002 对应 Priya 一对一，要带 payments API GA 是否提前两周的建议。
+em_003 主题写 tomorrow，但邮件是前一天收到，所以其实对应当天中午 Stripe lunch。
+PSD3 同时在 cal_009、em_011、news_002 出现，要聚合。
+Stripe 同时在 cal_005、em_003、news_004 出现，要聚合。
+Lyra 同时在 cal_010、news_003、news_022 出现，要聚合成 competitor watch。
+Cobalt Labs 是 always include，news_001 基本必须进。
+Maya Chen 是 anything mentioning her goes in，cal_006 / em_008 不能粗暴丢掉。
+Bitcoin 价格新闻 news_008 / em_019 要丢，因为用户不关心日常 crypto price。
+但 crypto enforcement 例外要保留，所以 news_009 SEC charges Helios 是候选。
+体育、娱乐新闻要丢：news_006、news_007、news_019、news_029。
+自动通知和低价值邮件很多，要主动丢并解释，例如 LinkedIn、Slack digest、offsite venue thread、mass email。
+数据里有大量非 TTS 友好数字：$4B、$80M、$1.2B、23%、50M、7%、60%、日期和时间格式。
+我会怎么做
+我不会单 prompt 一把梭。推荐方案还是：
+
+规则预处理：normalize 输入，标记 entity、topic、sensitivity、action-required、calendar link。
+显式打分和过滤：tracked entities、action-required、当天会议依赖加权；not_interested、自动通知、娱乐体育降权或丢弃。
+主题聚合去重：PSD3、Stripe、Lyra、Cobalt launch 先合并，再写简报。
+生成 briefing plan：先决定每段讲什么、对应 ids、目标词数。
+生成英文 TTS 文本：限制只能使用 plan 中事实。
+校验输出：无 Markdown/URL/email，词数在范围内，数字口语化，private 没泄露。
+写 metadata：briefing.json 里把 selected 和 discarded 都写清楚。
+
+这些东西有在文档中体现吗
+
+---
+
+告诉我，你的结构设计，是如何能够保证功能特性与核心约束的
+
+---
+
+架构有两个问题，第一个是没有面向对象设计【类，属性，方法等】，然后第二个是他没有去解释整个架构图每一块都在做什么事情。
+
+---
+
+每个文件可能都有一个对应的一个加载吧。然后你看一下怎么样去抽象，因为后面可能会接入不同的数据的源。
+
+---
+
+之前流程图里面的normalize items是什么意思？
+
+---
+
+同理，我们的signal extractor提取信号这一块是不是有不同的提取方式？它这里面是不是要有一些设计？然后那个之前你说到的那个item的filter和rank是不是也要有相关的设计？就是filter，不同的filter不同的排序，这一些都同理，你要一次性都帮我排查一下。
+
+---
+
+同理，我们的signal extractor提取信号这一块是不是有不同的提取方式？它这里面是不是要有一些设计？然后那个之前你说到的那个item的filter和rank是不是也要有相关的设计？就是filter，不同的filter不同的排序，这一些都同理，你要一次性都帮我排查一下。
+
+---
+
+等等，我看到你现在signal的extractor里面有一些user profile，或者是说用户的偏好，但理论上如果这个系统是很多用户在用的话，你还需要，你如果这么做的话可能不能很好地解耦，以及没有对业务有很好的建模。所以我感觉是不同的用户确实是不同的用户有不同的建模方式，就是profile，那这个profile可能一旦应用到给这个用户的话，那么它就会变成一些rules，从profile里面有一些rules会应用进去，我感觉是这个样子的。
+
+除此之外，你先生成一个临时的一个plan文档，因为不要丢失上下文以及我更好的review。然后等我们迭代完之后，你再update到那个我们的plan里面去。
+
+---
+
+用户这里的Profile应该不需要带data source吧？就直接load就行了吧？然后的话，那个，为什么会有UserProfileFactory还有UserProfile？有这么多抽象？然后ItemNormalizer又为什么会是单独的一个类？有考虑过它的必要性吗？我不一定是对的。
+
+---
+
+Userpolicy Factory和User policy.为什么要独立成两个类？ItemNormalizer有没有必要是一个类？因为好像你在每个Loader，每个类它的Loader的时候，就可以做这件事情吧？
+
+---
+
+可以啊，那你先改一下我们的临时文档。
+
+---
+
+下面这一块的线我看不太清楚在干什么，你可以解释一下给我听吗？
+
+---
+
+等等，你signal extractor和item selector有什么区别啊？
+
+---
+
+Cluster还需要用user Policy吗？。
+
+---
+
+Cluster还需要用user Policy吗？还有就是它出现的顺序，它应该是在ItemSelector前，还是在Selector后啊？
+
+---
+
+好的，更新一下。
+
+---
+
+SafetyFilter  项目有要求吗
+
+---
+
+那是不是就在那个extractor里面做就行了呀？
+
+---
+
+那是不是就在那个extractor里面做就行了呀？
+
+---
+
+更新一下
+
+---
+
+更新一下文档
+
+---
+
+好的，那我现在有几个问题，比如说，因为我们现在把大语言模型或者说Agent只用来于最后的那个写作，或者说修改。那我想说的是，比如说signal提取，还有那个topic聚类，然后topic selector，还有那个brief validator，这个东西它那个不需要用到模型判断吗？拿到规则就可以覆盖全部的情况吗？
+
+---
+
+我提出这个问题是因为我们现在非常的是Workflow。那么一旦规则覆盖不了的话，它就会比较差。它这个题目要求的是Agent。所以我们考虑一下有没有可能说用agentic的方式做的比较好？所谓的Agentic的方式，就是说我们提供一些tool给到Agent，然后让Agent去能够去explore整个context，然后去make the next decision。当然，纯逻辑的部分我们肯定要分装到tools里面去。你可以去网上搜索一下claude，它对于Workflow和Agent的一个讲解。然后你看一下我们这个情况下是不是用Agentic的方式，还是用怎样的方式会更好？因为我怕太脆弱了，整个系统纯规则，Workflow。当然，如果纯规则能够覆盖的话，那么效果一定是最好的。
+
+---
+
+工具的设计，工具必须是纯规则的。但我们刚刚不是提到说signal的提取，还有一些聚类，还有一些等等的一些逻辑，可能需要用到大模型。那你如果把这些东西分装在工具里面，那就肯定是不行的。工具它一定是强规则的。那个需要模型的读部分就交给模型处理。
+
+---
+
+validate_decision_log
+validate_briefing_plan
+validate_briefing_text
+
+这几个可以纯规则来校验什么东西啊？
+
+---
+
+不是，你这些可以纯规则做到吗？
+
+---
+
+对这个事情有一个新的理解，就是user policy最好是embed到每个data source里面，比如说这个data source里面，不同的data source会有不同的规则，在过滤、排序阶段。比如说对什么感兴趣，对什么不感兴趣，这个是可以直接过滤掉的。然后以及有一些重要的提醒事情，比如说日历有明显冲突，那这些东西就是强规则检测出来的，一旦检测到了，它的分数就直接拉满。拉满之后，要补充reasoning，也就是为什么它分数很高。那么每个信息源它在过滤和排序的时候，有些是纯规则，有些是要用模型去判断的。那这里面就是有两套玩法。然后信息源里 每件事情都可以打个tag。
+
+然后每个信息源都做好规则+模型的过滤，排序后。Agent planning阶段要有一个skill。第一步的话是去explore不同的信息源，然后确定今日Brief 主题的类别。一定要把分数拉满的那些给包含进去，也就是一定要体现重要程度高的。然后按照用户的偏好去生成精致的brief。 由Agent 来做一个主题分类。这里面既支持user policy也支持skill，也就是可以按照某件事情进行分类，也可以按照其他的维度去进行分类。也就是信息源对于Agent来说就是tool，然后Agent可以去根据skill还有user policy去进行分类。
+
+---
+
+对这个事情有一个新的理解，就是user policy最好是embed到每个data source里面，比如说这个data source里面，不同的data source会有不同的规则，在过滤、排序阶段。比如说对什么感兴趣，对什么不感兴趣，这个是可以直接过滤掉的。然后以及有一些重要的提醒事情，比如说日历有明显冲突，那这些东西就是强规则检测出来的，一旦检测到了，它的分数就直接拉满。拉满之后，要补充reasoning，也就是为什么它分数很高。那么每个信息源它在过滤和排序的时候，有些是纯规则，有些是要用模型去判断的。那这里面就是有两套玩法。然后信息源里 每件事情都可以打个tag。
+
+然后每个信息源都做好规则+模型的过滤，排序后。然后user的profile在生成阶段的话，他的一些偏好和planning需要融合成一个beif-generation-skill。Agent planning阶段还要有一个skill。第一步的话是去explore不同的信息源，然后确定今日Brief 主题的类别。一定要把分数拉满的那些给包含进去，也就是一定要体现重要程度高的。然后按照用户的偏好去生成今日的brief。 
+
+然后最后就Validate几个重要的，比如说时间、时长、TTS友好度，纯规则化去做检测。然后还有一些LLMs judge的, 比如说那些分数高的，那一些信息有没有体现在brief里面.
+
+你看看根据需求我们有没有漏掉什么？
+
+---
+
+1. 新闻是否和用户工作相关、邮件是否需要今天行动。 为什么是 rule + model 。
+2. Cross-source planning 这个事情用户难道会去设定吗？如果用户没有设定的话，其实你就让模型每个源都去探索就好了呀。
+3. BriefExplorer 写成一个skill就行了吧？
+4. Brief generation skill  主要是把User policy翻译成skill，然后这样子目的是为了Agent更好的使用，了解用户的需求。
+
+---
+
+1. 新闻是否和用户工作相关、邮件是否需要今天行动。 为什么是 rule + model 。
+2. Cross-source planning 这个事情用户难道会去设定吗？如果用户没有设定的话，其实你就让模型每个源都去探索就好了呀。
+3. BriefExplorer 写成一个skill就行了吧？你了解一下 https://agentskills.io/home
+4. Brief generation skill  主要是把User policy翻译成skill，然后这样子目的是为了Agent更好的使用，了解用户的需求。
+
+---
+
+更新一下文档
+
+---
+
+plan seed 是啥
+
+---
+
+可以，check一下 README.md  和 数据里面的细节。在功能与检查间，有没有漏的。我们的系统是不是robust to the changes
+
+---
+
+可以，check一下 README.md  和 数据里面的细节。在功能与检查间，有没有漏的。我们的系统是不是robust to the changes
+
+---
+
+1. 这是靠规则写入，还是模型写入。
+2. 可以保存，但是这个估算的方法最好参考业界
+5. 更稳的是在进入 generation 前就给 allowedFacts 提供 spoken form 。 这个是什么意思。
+6. 这个是有要求吗，因为你这个东西的检测也是要靠模型的吧？
+
+
+8 不需要。其他可以的
+
+---
+
+1. 这是靠规则写入，还是模型写入。
+2. 可以保存，但是这个估算的方法最好参考业界
+5. 更稳的是在进入 generation 前就给 allowedFacts 提供 spoken form 。 这个是什么意思。
+6. 这个是有要求吗，因为你这个东西的检测也是要靠模型的吧？
+
+
+8 不需要。其他bullet point可以的。
+
+关于不够robust
+1. agent 获取的时候要获取到reason，也要记录
+2. must-include 会进入 llm judege validate把
+3. section ranges  我们不是有个outline吗，是不是当时就可以给他include了？

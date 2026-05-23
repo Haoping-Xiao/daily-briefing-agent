@@ -1,0 +1,468 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "b852ac1f9131",
+  "session_id": "c423f855-f216-497f-a75b-c25064be7bd1",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-23T09:58:42.752009Z",
+  "branch": "architecture-draft",
+  "checkpoints_count": 38,
+  "files_touched": [
+    "ARCHITECTURE_DRAFT.md"
+  ],
+  "agent": "Cursor",
+  "model": "gpt-5.5-medium",
+  "turn_id": "a979923a0379",
+  "session_metrics": {
+    "turn_count": 38
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-23T09:58:42.738698Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 379,
+    "human_modified": 2842,
+    "human_removed": 0,
+    "total_committed": 379,
+    "total_lines_changed": 3221,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 61,
+      "user_lines_removed": 17,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".cursor/hooks.json": 40,
+        "README.md": 21
+      },
+      "user_removed_per_file": {
+        "README.md": 17
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 61,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17
+    },
+    {
+      "checkpoint_number": 14,
+      "user_lines_added": 25,
+      "user_lines_removed": 25,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      }
+    },
+    {
+      "checkpoint_number": 15,
+      "user_lines_added": 25,
+      "user_lines_removed": 25,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      }
+    },
+    {
+      "checkpoint_number": 16,
+      "user_lines_added": 25,
+      "user_lines_removed": 25,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      }
+    },
+    {
+      "checkpoint_number": 17,
+      "user_lines_added": 25,
+      "user_lines_removed": 25,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      }
+    },
+    {
+      "checkpoint_number": 18,
+      "user_lines_added": 25,
+      "user_lines_removed": 25,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 25
+      }
+    },
+    {
+      "checkpoint_number": 19,
+      "user_lines_added": 103,
+      "user_lines_removed": 76,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 103
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 76
+      }
+    },
+    {
+      "checkpoint_number": 20,
+      "user_lines_added": 103,
+      "user_lines_removed": 76,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 103
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 76
+      }
+    },
+    {
+      "checkpoint_number": 21,
+      "user_lines_added": 103,
+      "user_lines_removed": 76,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 103
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 76
+      }
+    },
+    {
+      "checkpoint_number": 22,
+      "user_lines_added": 103,
+      "user_lines_removed": 76,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 103
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 76
+      }
+    },
+    {
+      "checkpoint_number": 23,
+      "user_lines_added": 103,
+      "user_lines_removed": 76,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 103
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 76
+      }
+    },
+    {
+      "checkpoint_number": 24,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 25,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 26,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 27,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 28,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 29,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 30,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 31,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 32,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 33,
+      "user_lines_added": 108,
+      "user_lines_removed": 83,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 108
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 83
+      }
+    },
+    {
+      "checkpoint_number": 34,
+      "user_lines_added": 201,
+      "user_lines_removed": 215,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 201
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 215
+      }
+    },
+    {
+      "checkpoint_number": 35,
+      "user_lines_added": 201,
+      "user_lines_removed": 215,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 201
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 215
+      }
+    },
+    {
+      "checkpoint_number": 36,
+      "user_lines_added": 201,
+      "user_lines_removed": 215,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 201
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 215
+      }
+    },
+    {
+      "checkpoint_number": 37,
+      "user_lines_added": 201,
+      "user_lines_removed": 215,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 201
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 215
+      }
+    },
+    {
+      "checkpoint_number": 38,
+      "user_lines_added": 205,
+      "user_lines_removed": 218,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 205
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 218
+      }
+    },
+    {
+      "checkpoint_number": 39,
+      "user_lines_added": 205,
+      "user_lines_removed": 218,
+      "agent_lines_added": 520,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        "ARCHITECTURE_DRAFT.md": 205
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 218
+      }
+    }
+  ]
+}
