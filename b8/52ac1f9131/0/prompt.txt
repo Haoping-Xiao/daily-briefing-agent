@@ -237,3 +237,7 @@ plan seed 是啥
 1. agent 获取的时候要获取到reason，也要记录
 2. must-include 会进入 llm judege validate把
 3. section ranges  我们不是有个outline吗，是不是当时就可以给他include了？
+
+---
+
+可以，更新一下文档
