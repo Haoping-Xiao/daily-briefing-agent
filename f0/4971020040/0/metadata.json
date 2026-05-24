@@ -1,0 +1,98 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "f04971020040",
+  "session_id": "agent-7317455f-92cc-43f0-912e-62859ac2b77d",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-24T15:23:45.190566Z",
+  "branch": "architecture-draft",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "ARCHITECTURE_DRAFT.md"
+  ],
+  "agent": "Cursor",
+  "model": "composer-2.5",
+  "turn_id": "05cdf507f98c",
+  "session_metrics": {
+    "duration_ms": 47270,
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-24T15:23:44.309231Z",
+    "agent_lines": 0,
+    "agent_removed": 6,
+    "human_added": 1201,
+    "human_modified": 1017,
+    "human_removed": 0,
+    "total_committed": 1211,
+    "total_lines_changed": 2326,
+    "agent_percentage": 0.2579535683576956,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 9534,
+      "user_lines_removed": 1,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".cursor/skills/langfuse-cli-debugging/SKILL.md": 97,
+        ".env.example": 4,
+        ".gitignore": 6,
+        "ARCHITECTURE_DRAFT.md": 220,
+        "briefing.json": 174,
+        "briefing.txt": 9,
+        "package-lock.json": 5266,
+        "package.json": 39,
+        "src/agent/cursor-sdk-agent-client.ts": 8,
+        "src/agent/cursor-sdk-daily-briefing-runner.ts": 164,
+        "src/agent/prompts.ts": 71,
+        "src/agent/result-parser.ts": 203,
+        "src/agent/types.ts": 40,
+        "src/cli.ts": 53,
+        "src/config.ts": 68,
+        "src/data/json-file-source.ts": 32,
+        "src/domain/types.ts": 409,
+        "src/loaders/calendar-loader.ts": 46,
+        "src/loaders/email-loader.ts": 42,
+        "src/loaders/news-loader.ts": 39,
+        "src/loaders/profile-loader.ts": 56,
+        "src/mcp/daily-briefing-tools.ts": 41,
+        "src/mcp/tool-runtime.ts": 21,
+        "src/observability/daily-briefing-tracer.ts": 153,
+        "src/observability/langfuse-tracer.ts": 494,
+        "src/output/metadata-builder.ts": 119,
+        "src/output/output-writer.ts": 14,
+        "src/pipeline/source-runtime.ts": 51,
+        "src/policy/jordan-policy-compiler.ts": 344,
+        "src/processors/calendar-source-processor.ts": 53,
+        "src/processors/email-source-processor.ts": 10,
+        "src/processors/facts.ts": 43,
+        "src/processors/news-source-processor.ts": 10,
+        "src/processors/source-processor.ts": 142,
+        "src/rules/rule-expression.ts": 33,
+        "src/validators/llm-judge-validators.ts": 56,
+        "src/validators/rule-validators.ts": 64,
+        "tests/cursor-sdk-runner.test.ts": 306,
+        "tests/json-file-source.test.ts": 33,
+        "tests/loaders-policy.test.ts": 70,
+        "tests/mcp-tools.test.ts": 18,
+        "tests/result-parser.test.ts": 49,
+        "tests/source-processors.test.ts": 137,
+        "tests/validators-output.test.ts": 201,
+        "tsconfig.json": 18,
+        "vitest.config.ts": 8
+      },
+      "user_removed_per_file": {
+        "ARCHITECTURE_DRAFT.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 9534,
+      "agent_lines_removed": 1
+    }
+  ]
+}
