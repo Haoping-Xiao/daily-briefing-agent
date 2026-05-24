@@ -1,0 +1,39 @@
+{
+  "name": "daily-briefing-agent",
+  "version": "1.0.0",
+  "description": "我们正在做一款\"早晨陪你出门\"的语音助手。用户每天起床后，戴上耳机听一段 **60–90 秒**的个性化早间简报，内容由 Agent 系统从用户当日数据中生成。",
+  "type": "module",
+  "main": "dist/cli.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "briefing": "tsx src/cli.ts",
+    "mcp:tools": "tsx src/mcp/daily-briefing-tools.ts",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Haoping-Xiao/daily-briefing-agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Haoping-Xiao/daily-briefing-agent/issues"
+  },
+  "homepage": "https://github.com/Haoping-Xiao/daily-briefing-agent#readme",
+  "dependencies": {
+    "@cursor/sdk": "^1.0.13",
+    "@langfuse/otel": "^5.3.0",
+    "@langfuse/tracing": "^5.3.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

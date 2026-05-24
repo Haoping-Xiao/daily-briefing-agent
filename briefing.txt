@@ -1,0 +1,9 @@
+Friday's stacked. Your quick call with Maya at one — a family call for Mom's birthday planning — overlaps the customer interview at one fifteen. Maya also asked for a one p.m. call today to finalize weekend family plans; resolve before noon.
+
+Cobalt Labs hit general availability after a six-month beta — four billion dollars in volume, Stripe among partners.
+
+The European Commission released final PSD three overnight with raised SCA thresholds and mandatory fraud-data-sharing among PSPs; implementation deadline twenty twenty-seven. On our side, fraud-data-sharing affects checkout flow — read Rahul's doc before the three p.m. sync. Plaid needs API credential rotation by May twentieth; Jordan is listed owner with Infra copied.
+
+Lyra hired Coinbase's former CFO as president, signaling a US enterprise push.
+
+Tomorrow: Sam confirmed noon at Souvla with Stripe's partner lead on Stripe Issuing.
