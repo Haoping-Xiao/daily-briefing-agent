@@ -1,0 +1,3200 @@
+You are the Daily Briefing Agent.
+
+Before drafting, you MUST call each MCP tool once: calendar_candidates, email_candidates, news_candidates.
+Use only returned RankedSourceCandidate data and the supplied generation context.
+Do not use shell, read, grep, or raw input files to gather source data.
+Do not use raw input files directly. Do not invent facts. Do not speak restrictedFacts.
+Use speakableFacts.spoken for the final TTS text.
+
+Briefing date: 2026-05-15
+
+Generation context JSON:
+{
+  "toneRules": [
+    "warm but efficient, like a thoughtful chief of staff",
+    "never use jargon I would not use myself in a one-on-one",
+    "do not pad with hedge words like 'just', 'kind of', 'I think'",
+    "be specific with numbers but read them naturally (say 'twelve percent', not '12%')",
+    "do not start with 'Good morning' every day — vary the opening",
+    "This is read aloud by TTS at the start of my day. I cannot see the text — assume zero visual context."
+  ],
+  "interestRules": [
+    "AI and large language models, especially product applications (not pure research benchmarks)",
+    "fintech regulation in the US and EU",
+    "developer tools, API design, and platform engineering",
+    "product analytics, experimentation, and growth",
+    "anything about the Cobalt Labs payments product launch"
+  ],
+  "exclusionRules": [
+    "celebrity and entertainment news",
+    "day-to-day cryptocurrency price movements — but DO surface crypto regulation or enforcement actions",
+    "sports scores and league standings"
+  ],
+  "trackedEntityRules": [
+    "Cobalt Labs: my company — always include",
+    "Stripe: key partner, we co-build infra",
+    "Plaid: core integration vendor — operational issues affect us",
+    "Lyra Finance: main competitor, watch closely",
+    "Maya Chen: my sister — anything mentioning her goes in"
+  ],
+  "targetDurationSeconds": 75,
+  "minDurationSeconds": 60,
+  "maxDurationSeconds": 90
+}
+
+Candidate constraints already computed by the application:
+[
+  {
+    "id": "calendar_conflict_cal_006_cal_007",
+    "sourceType": "calendar",
+    "title": "Schedule conflict: Quick call with Maya and Customer interview — ACME Bank product team",
+    "topicTags": [
+      "schedule",
+      "schedule_conflict",
+      "personal_family",
+      "customer_research"
+    ],
+    "score": {
+      "value": 100,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "calendar_overlap",
+          "reason": "Quick call with Maya overlaps with Customer interview — ACME Bank product team; this is a hard schedule risk.",
+          "delta": 90
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Quick call with Maya overlaps Customer interview — ACME Bank product team",
+        "spoken": "Your one o'clock Maya call overlaps with the customer interview at one fifteen."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_006",
+      "cal_007"
+    ]
+  },
+  {
+    "id": "cal_006",
+    "sourceType": "calendar",
+    "title": "Quick call with Maya",
+    "topicTags": [
+      "schedule",
+      "personal_family"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_maya",
+          "reason": "Maya Chen is a tracked family entity.",
+          "delta": 40
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Quick call with Maya. Family call — Mom's birthday planning.",
+        "spoken": "Quick call with Maya. Family call — Mom's birthday planning."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_006"
+    ]
+  },
+  {
+    "id": "cal_009",
+    "sourceType": "calendar",
+    "title": "Compliance sync — EU PSD3 implications",
+    "topicTags": [
+      "schedule",
+      "psd3"
+    ],
+    "score": {
+      "value": 40,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 is a relevant fintech regulation theme.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Compliance sync — EU PSD3 implications. Rahul will walk through final PSD3 text and what it means for our SCA flow.",
+        "spoken": "Compliance sync — EU PSD3 implications. Rahul will walk through final PSD3 text and what it means for our SCA flow."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_009"
+    ]
+  },
+  {
+    "id": "cal_008",
+    "sourceType": "calendar",
+    "title": "Board prep with Alex Wong (CEO)",
+    "topicTags": [
+      "schedule",
+      "board_prep"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_board_prep",
+          "reason": "Board prep is a priority work theme.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Board prep with Alex Wong (CEO). Walk through payments revenue slides for Monday's board meeting.",
+        "spoken": "Board prep with Alex Wong (CEO). Walk through payments revenue slides for Monday's board meeting."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_008"
+    ]
+  },
+  {
+    "id": "cal_005",
+    "sourceType": "calendar",
+    "title": "Lunch with Sam Reyes (Stripe Partnerships)",
+    "topicTags": [
+      "schedule",
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lunch with Sam Reyes (Stripe Partnerships). Quarterly catchup. Sam is bringing Jess Park, their new partner team lead.",
+        "spoken": "Lunch with Sam Reyes (Stripe Partnerships). Quarterly catchup. Sam is bringing Jess Park, their new partner team lead."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_005"
+    ]
+  },
+  {
+    "id": "cal_010",
+    "sourceType": "calendar",
+    "title": "Competitive teardown — Lyra Finance v3 SDK",
+    "topicTags": [
+      "schedule",
+      "competitor_lyra"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is a tracked competitor.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Competitive teardown — Lyra Finance v3 SDK. Internal review of Lyra's latest SDK release.",
+        "spoken": "Competitive teardown — Lyra Finance v3 SDK. Internal review of Lyra's latest SDK release."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_010"
+    ]
+  },
+  {
+    "id": "cal_001",
+    "sourceType": "calendar",
+    "title": "Team standup",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Team standup. Daily team standup.",
+        "spoken": "Team standup. Daily team standup."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_001"
+    ]
+  },
+  {
+    "id": "cal_002",
+    "sourceType": "calendar",
+    "title": "Q2 roadmap review — Payments",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Q2 roadmap review — Payments. Walk through Q2 commitments. Jordan owns the agenda.",
+        "spoken": "Q2 roadmap review — Payments. Walk through Q2 commitments. Jordan owns the agenda."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_002"
+    ]
+  },
+  {
+    "id": "cal_003",
+    "sourceType": "calendar",
+    "title": "1:1 with Priya Sharma (VP Eng)",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "1:1 with Priya Sharma (VP Eng). Weekly 1:1.",
+        "spoken": "1:1 with Priya Sharma (VP Eng). Weekly 1:1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_003"
+    ]
+  },
+  {
+    "id": "cal_004",
+    "sourceType": "calendar",
+    "title": "Focus block — draft payments launch comms",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Focus block — draft payments launch comms. Self-scheduled focus time.",
+        "spoken": "Focus block — draft payments launch comms. Self-scheduled focus time."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_004"
+    ]
+  },
+  {
+    "id": "cal_007",
+    "sourceType": "calendar",
+    "title": "Customer interview — ACME Bank product team",
+    "topicTags": [
+      "schedule",
+      "customer_research"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Customer interview — ACME Bank product team. Discovery interview on multi-rail payments.",
+        "spoken": "Customer interview — ACME Bank product team. Discovery interview on multi-rail payments."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_007"
+    ]
+  },
+  {
+    "id": "cal_011",
+    "sourceType": "calendar",
+    "title": "Personal appointment",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Personal appointment",
+        "spoken": "You have a private appointment later today."
+      }
+    ],
+    "restrictedFacts": [
+      {
+        "redactedLabel": "private calendar details",
+        "reason": "Private calendar event details must not be spoken."
+      }
+    ],
+    "originalItemIds": [
+      "cal_011"
+    ]
+  },
+  {
+    "id": "em_009",
+    "sourceType": "email",
+    "title": "ACTION REQUIRED: credential rotation by May 20",
+    "topicTags": [
+      "vendor_plaid"
+    ],
+    "score": {
+      "value": 75,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_action_required",
+          "reason": "Action-required email needs attention.",
+          "delta": 35
+        },
+        {
+          "source": "rule",
+          "label": "boost_plaid",
+          "reason": "Plaid is a tracked integration vendor.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "ACTION REQUIRED: credential rotation by May 20. Plaid is requiring all partners to rotate API credentials by 2026-05-20. After that date, unrotated keys will be revoked. Infra is CC'd but Jordan is the listed owner.",
+        "spoken": "ACTION REQUIRED: credential rotation by May 20. Plaid is requiring all partners to rotate API credentials by 2026-05-20. After that date, unrotated keys will be revoked. Infra is CC'd but Jordan is the listed owner."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_009"
+    ]
+  },
+  {
+    "id": "em_011",
+    "sourceType": "email",
+    "title": "PSD3 final text dropped overnight — please read before 3pm sync",
+    "topicTags": [
+      "psd3"
+    ],
+    "score": {
+      "value": 75,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_action_required",
+          "reason": "Action-required email needs attention.",
+          "delta": 35
+        },
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 affects the user's fintech work.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PSD3 final text dropped overnight — please read before 3pm sync. The EU published the final PSD3 text overnight. Material changes to SCA exemption thresholds and a new fraud-data-sharing requirement that affects our checkout flow. Rahul has annotated the key sections in the linked doc.",
+        "spoken": "PSD3 final text dropped overnight — please read before 3pm sync. The EU published the final PSD3 text overnight. Material changes to SCA exemption thresholds and a new fraud-data-sharing requirement that affects our checkout flow. Rahul has annotated the key sections in the linked doc."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_011"
+    ]
+  },
+  {
+    "id": "em_007",
+    "sourceType": "email",
+    "title": "Daily Update: The new shape of platform fees in fintech",
+    "topicTags": [
+      "partner_stripe",
+      "company_launch"
+    ],
+    "score": {
+      "value": 55,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs launch and product context should be surfaced.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Daily Update: The new shape of platform fees in fintech. Long-form analysis of how interchange compression is reshaping platform fee models. Mentions Cobalt Labs and Stripe as examples in the third paragraph.",
+        "spoken": "Daily Update: The new shape of platform fees in fintech. Long-form analysis of how interchange compression is reshaping platform fee models. Mentions Cobalt Labs and Stripe as examples in the third paragraph."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_007"
+    ]
+  },
+  {
+    "id": "em_008",
+    "sourceType": "email",
+    "title": "free at 1?",
+    "topicTags": [
+      "personal_family"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_maya",
+          "reason": "Maya Chen is a tracked family entity.",
+          "delta": 40
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "free at 1?. Maya wants a quick call at 1pm to lock in Mom's surprise birthday plans for next weekend. Mentions she already booked the restaurant tentatively.",
+        "spoken": "free at 1?. Maya wants a quick call at 1pm to lock in Mom's surprise birthday plans for next weekend. Mentions she already booked the restaurant tentatively."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_008"
+    ]
+  },
+  {
+    "id": "em_010",
+    "sourceType": "email",
+    "title": "Top 10 stories on HN this week",
+    "topicTags": [
+      "company_launch"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs launch and product context should be surfaced.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Top 10 stories on HN this week. Weekly digest of trending HN stories. Includes one Cobalt Labs Show HN that hit #1.",
+        "spoken": "Top 10 stories on HN this week. Weekly digest of trending HN stories. Includes one Cobalt Labs Show HN that hit #1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_010"
+    ]
+  },
+  {
+    "id": "em_003",
+    "sourceType": "email",
+    "title": "Looking forward to lunch tomorrow",
+    "topicTags": [
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Looking forward to lunch tomorrow. Sam confirms 12pm at Souvla and notes he is bringing Jess Park (new partner team lead at Stripe). Hints they want to talk about extending the integration to Stripe Issuing.",
+        "spoken": "Looking forward to lunch tomorrow. Sam confirms 12pm at Souvla and notes he is bringing Jess Park (new partner team lead at Stripe). Hints they want to talk about extending the integration to Stripe Issuing."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_003"
+    ]
+  },
+  {
+    "id": "em_001",
+    "sourceType": "email",
+    "title": "Board deck — need your eyes on payments revenue slides before 2pm Friday",
+    "topicTags": [
+      "board_prep"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Board deck — need your eyes on payments revenue slides before 2pm Friday. CEO asks Jordan to review slides 8-14 of the Q1 board deck before their 2pm prep. Flags the ARR projection chart as the most important one.",
+        "spoken": "Board deck — need your eyes on payments revenue slides before 2pm Friday. CEO asks Jordan to review slides 8-14 of the Q1 board deck before their 2pm prep. Flags the ARR projection chart as the most important one."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_001"
+    ]
+  },
+  {
+    "id": "em_002",
+    "sourceType": "email",
+    "title": "Agenda for our 1:1",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Agenda for our 1:1. Priya wants to discuss the payments API GA timeline and whether we can pull it forward two weeks. Asks Jordan to come with a recommendation.",
+        "spoken": "Agenda for our 1:1. Priya wants to discuss the payments API GA timeline and whether we can pull it forward two weeks. Asks Jordan to come with a recommendation."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_002"
+    ]
+  },
+  {
+    "id": "em_006",
+    "sourceType": "email",
+    "title": "Your AWS bill increased 23% this month",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Your AWS bill increased 23% this month. AWS bill projection for May is 23% higher than April, driven by RDS and Bedrock usage. Finance is CC'd.",
+        "spoken": "Your AWS bill increased 23% this month. AWS bill projection for May is 23% higher than April, driven by RDS and Bedrock usage. Finance is CC'd."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_006"
+    ]
+  },
+  {
+    "id": "em_013",
+    "sourceType": "email",
+    "title": "Escalation: enterprise customer complaint re: onboarding flow",
+    "topicTags": [
+      "board_prep"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Escalation: enterprise customer complaint re: onboarding flow. A top-20 enterprise customer (Vertex Capital) has escalated repeated drop-off in the KYC step of onboarding. Support requests product input by Monday.",
+        "spoken": "Escalation: enterprise customer complaint re: onboarding flow. A top-20 enterprise customer (Vertex Capital) has escalated repeated drop-off in the KYC step of onboarding. Support requests product input by Monday."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_013"
+    ]
+  },
+  {
+    "id": "em_014",
+    "sourceType": "email",
+    "title": "Re: Re: Re: offsite venue suggestions",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Re: Re: Re: offsite venue suggestions. 15-person team thread debating offsite venues. Dana suggests Tahoe, Marcus pushes back on cost, others chime in.",
+        "spoken": "Re: Re: Re: offsite venue suggestions. 15-person team thread debating offsite venues. Dana suggests Tahoe, Marcus pushes back on cost, others chime in."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_014"
+    ]
+  },
+  {
+    "id": "em_016",
+    "sourceType": "email",
+    "title": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421)",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421). Engineering opened a PR fixing a rounding bug that caused a 1-cent discrepancy on certain JPY conversions. Reviewer requested from Jordan as PM owner.",
+        "spoken": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421). Engineering opened a PR fixing a rounding bug that caused a 1-cent discrepancy on certain JPY conversions. Reviewer requested from Jordan as PM owner."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_016"
+    ]
+  },
+  {
+    "id": "em_017",
+    "sourceType": "email",
+    "title": "Friday social drinks @ 5pm — Maple Room",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Friday social drinks @ 5pm — Maple Room. Reminder about Friday social drinks in the office at 5pm.",
+        "spoken": "Friday social drinks @ 5pm — Maple Room. Reminder about Friday social drinks in the office at 5pm."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_017"
+    ]
+  },
+  {
+    "id": "em_019",
+    "sourceType": "email",
+    "title": "Bitcoin breaks $200,000 for the first time",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Bitcoin breaks $200,000 for the first time. BTC crossed $200k overnight on heavy spot ETF inflows.",
+        "spoken": "Bitcoin breaks two hundred thousand dollars for the first time. BTC crossed $200k overnight on heavy spot ETF inflows."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_019"
+    ]
+  },
+  {
+    "id": "em_020",
+    "sourceType": "email",
+    "title": "Appointment confirmation for May 15, 5:00 PM",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Appointment confirmation for May 15, 5:00 PM",
+        "spoken": "There is a private personal appointment confirmation for later today."
+      }
+    ],
+    "restrictedFacts": [
+      {
+        "redactedLabel": "medical appointment details",
+        "reason": "Medical appointment details must not be spoken."
+      }
+    ],
+    "originalItemIds": [
+      "em_020"
+    ]
+  },
+  {
+    "id": "news_001",
+    "sourceType": "news",
+    "title": "Cobalt Labs payments platform exits beta with $4B in transaction volume",
+    "topicTags": [
+      "company_launch",
+      "partner_stripe",
+      "ai_product"
+    ],
+    "score": {
+      "value": 100,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs is the user's company and launch news should always be surfaced.",
+          "delta": 50
+        },
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Cobalt Labs payments platform exits beta with $4B in transaction volume. Cobalt Labs announced general availability of its payments platform after a six-month beta. The company says it processed $4B in volume during beta with partners including Stripe.",
+        "spoken": "Cobalt Labs payments platform exits beta with four billion dollars in transaction volume. Cobalt Labs announced general availability of its payments platform after a six-month beta. The company says it processed four billion dollars in volume during beta with partners including Stripe."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_001"
+    ]
+  },
+  {
+    "id": "news_002",
+    "sourceType": "news",
+    "title": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules",
+    "topicTags": [
+      "psd3",
+      "fintech_regulation",
+      "ai_product"
+    ],
+    "score": {
+      "value": 55,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 is a relevant fintech regulation theme.",
+          "delta": 30
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules. The European Commission released the final PSD3 text overnight. Notable changes include raised strong customer authentication thresholds and a new mandatory fraud-data-sharing scheme among PSPs. Implementation deadline is 2027.",
+        "spoken": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules. The European Commission released the final PSD3 text overnight. Notable changes include raised strong customer authentication thresholds and a new mandatory fraud-data-sharing scheme among PSPs. Implementation deadline is 2027."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_002"
+    ]
+  },
+  {
+    "id": "news_003",
+    "sourceType": "news",
+    "title": "Lyra Finance raises $80M Series C led by Sequoia at $1.2B valuation",
+    "topicTags": [
+      "competitor_lyra",
+      "ai_product"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is the main tracked competitor.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lyra Finance raises $80M Series C led by Sequoia at $1.2B valuation. Lyra Finance, a fintech competitor focused on cross-border payments, raised $80M in a Series C led by Sequoia Capital. The round values Lyra at $1.2B.",
+        "spoken": "Lyra Finance raises eighty million dollars Series C led by Sequoia at one point two billion dollars valuation. Lyra Finance, a fintech competitor focused on cross-border payments, raised eighty million dollars in a Series C led by Sequoia Capital. The round values Lyra at one point two billion dollars."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_003"
+    ]
+  },
+  {
+    "id": "news_005",
+    "sourceType": "news",
+    "title": "Plaid faces class-action lawsuit over alleged data-sharing practices",
+    "topicTags": [
+      "vendor_plaid",
+      "ai_product"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_plaid",
+          "reason": "Plaid is a tracked vendor.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Plaid faces class-action lawsuit over alleged data-sharing practices. Plaid is the subject of a new class-action suit alleging that consumer banking data was shared with third parties beyond stated terms. Plaid denies the claims.",
+        "spoken": "Plaid faces class-action lawsuit over alleged data-sharing practices. Plaid is the subject of a new class-action suit alleging that consumer banking data was shared with third parties beyond stated terms. Plaid denies the claims."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_005"
+    ]
+  },
+  {
+    "id": "news_009",
+    "sourceType": "news",
+    "title": "SEC charges crypto exchange Helios with offering unregistered securities",
+    "topicTags": [
+      "fintech_regulation",
+      "ai_product"
+    ],
+    "score": {
+      "value": 45,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_crypto_enforcement",
+          "reason": "Crypto enforcement is allowed by the user's exception policy.",
+          "delta": 20
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "SEC charges crypto exchange Helios with offering unregistered securities. The SEC filed charges against crypto exchange Helios for offering unregistered securities. Helios said it will contest the charges.",
+        "spoken": "SEC charges crypto exchange Helios with offering unregistered securities. The SEC filed charges against crypto exchange Helios for offering unregistered securities. Helios said it will contest the charges."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_009"
+    ]
+  },
+  {
+    "id": "news_004",
+    "sourceType": "news",
+    "title": "Stripe launches Issuing API in five new markets including Brazil and India",
+    "topicTags": [
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Stripe launches Issuing API in five new markets including Brazil and India. Stripe expanded its Issuing product to five additional markets. Brazil and India support both virtual and physical card issuance.",
+        "spoken": "Stripe launches Issuing API in five new markets including Brazil and India. Stripe expanded its Issuing product to five additional markets. Brazil and India support both virtual and physical card issuance."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_004"
+    ]
+  },
+  {
+    "id": "news_022",
+    "sourceType": "news",
+    "title": "Lyra Finance hires former Coinbase CFO as new president",
+    "topicTags": [
+      "competitor_lyra"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is the main tracked competitor.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lyra Finance hires former Coinbase CFO as new president. Lyra Finance announced it has hired Coinbase's former CFO as president, signaling a push into US enterprise sales.",
+        "spoken": "Lyra Finance hires former Coinbase CFO as new president. Lyra Finance announced it has hired Coinbase's former CFO as president, signaling a push into US enterprise sales."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_022"
+    ]
+  },
+  {
+    "id": "news_010",
+    "sourceType": "news",
+    "title": "Anthropic releases Claude 5.0 with 2M-token context window",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Anthropic releases Claude 5.0 with 2M-token context window. Anthropic released Claude 5.0, featuring a 2M-token context window and improved tool-use reliability. Pricing remains unchanged from Claude 4.7.",
+        "spoken": "Anthropic releases Claude five.0 with two million token context window. Anthropic released Claude five.0, featuring a two million token context window and improved tool-use reliability. Pricing remains unchanged from Claude 4.7."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_010"
+    ]
+  },
+  {
+    "id": "news_011",
+    "sourceType": "news",
+    "title": "GitHub Copilot launches agent mode in public preview",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "GitHub Copilot launches agent mode in public preview. GitHub announced public preview of Copilot's agent mode, which can autonomously edit multiple files and run tests. Available to all paid users.",
+        "spoken": "GitHub Copilot launches agent mode in public preview. GitHub announced public preview of Copilot's agent mode, which can autonomously edit multiple files and run tests. Available to all paid users."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_011"
+    ]
+  },
+  {
+    "id": "news_013",
+    "sourceType": "news",
+    "title": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks. OpenAI released Operator-2, an agent model the company says shows a 50% reduction in hallucinations on the AgentBench suite versus Operator-1.",
+        "spoken": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks. OpenAI released Operator-2, an agent model the company says shows a 50% reduction in hallucinations on the AgentBench suite versus Operator-1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_013"
+    ]
+  },
+  {
+    "id": "news_016",
+    "sourceType": "news",
+    "title": "OpenAI o5 sets new state of the art on reasoning benchmarks",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI o5 sets new state of the art on reasoning benchmarks. OpenAI's o5 reasoning model achieves a new SOTA on AIME 2026 and GPQA benchmarks.",
+        "spoken": "OpenAI o5 sets new state of the art on reasoning benchmarks. OpenAI's o5 reasoning model achieves a new SOTA on AIME 2026 and GPQA benchmarks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_016"
+    ]
+  },
+  {
+    "id": "news_017",
+    "sourceType": "news",
+    "title": "Vercel introduces Fluid Compute pricing tier",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Vercel introduces Fluid Compute pricing tier. Vercel announced a new pricing tier that bills only for active CPU time, claiming up to 70% savings on agentic workloads.",
+        "spoken": "Vercel introduces Fluid Compute pricing tier. Vercel announced a new pricing tier that bills only for active CPU time, claiming up to 70% savings on agentic workloads."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_017"
+    ]
+  },
+  {
+    "id": "news_021",
+    "sourceType": "news",
+    "title": "EU AI Act enforcement begins for high-risk AI systems",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "EU AI Act enforcement begins for high-risk AI systems. The EU AI Act's enforcement provisions for high-risk AI systems came into force, with fines up to 7% of global revenue. Financial services AI is in scope.",
+        "spoken": "EU AI Act enforcement begins for high-risk AI systems. The EU AI Act's enforcement provisions for high-risk AI systems came into force, with fines up to 7% of global revenue. Financial services AI is in scope."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_021"
+    ]
+  },
+  {
+    "id": "news_024",
+    "sourceType": "news",
+    "title": "OpenAI signs deal with Walmart to deploy retail agents in stores",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI signs deal with Walmart to deploy retail agents in stores. OpenAI announced a multi-year deal with Walmart to deploy in-store AI agents for inventory and customer assistance, starting with 200 US stores.",
+        "spoken": "OpenAI signs deal with Walmart to deploy retail agents in stores. OpenAI announced a multi-year deal with Walmart to deploy in-store AI agents for inventory and customer assistance, starting with 200 US stores."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_024"
+    ]
+  },
+  {
+    "id": "news_025",
+    "sourceType": "news",
+    "title": "Snowflake Q1 earnings beat on AI workload growth",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Snowflake Q1 earnings beat on AI workload growth. Snowflake beat Q1 estimates on revenue and EPS, citing growth from AI-related workloads.",
+        "spoken": "Snowflake Q1 earnings beat on AI workload growth. Snowflake beat Q1 estimates on revenue and EPS, citing growth from AI-related workloads."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_025"
+    ]
+  },
+  {
+    "id": "news_026",
+    "sourceType": "news",
+    "title": "Salesforce announces 1,500 layoffs as part of AI restructuring",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Salesforce announces 1,500 layoffs as part of AI restructuring. Salesforce announced 1,500 layoffs, primarily in sales and support roles. The company said it is reallocating headcount to AI product teams.",
+        "spoken": "Salesforce announces 1,500 layoffs as part of AI restructuring. Salesforce announced 1,500 layoffs, primarily in sales and support roles. The company said it is reallocating headcount to AI product teams."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_026"
+    ]
+  },
+  {
+    "id": "news_027",
+    "sourceType": "news",
+    "title": "Cursor raises $200M Series B at $4B valuation",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Cursor raises $200M Series B at $4B valuation. AI coding tool Cursor raised a $200M Series B led by Thrive Capital at a $4B valuation.",
+        "spoken": "Cursor raises $200M Series B at four billion dollars valuation. AI coding tool Cursor raised a $200M Series B led by Thrive Capital at a four billion dollars valuation."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_027"
+    ]
+  },
+  {
+    "id": "news_028",
+    "sourceType": "news",
+    "title": "DOJ files antitrust suit against Visa over debit network practices",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "DOJ files antitrust suit against Visa over debit network practices. The US Department of Justice filed an antitrust lawsuit against Visa, alleging the company illegally monopolized debit card networks.",
+        "spoken": "DOJ files antitrust suit against Visa over debit network practices. The US Department of Justice filed an antitrust lawsuit against Visa, alleging the company illegally monopolized debit card networks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_028"
+    ]
+  },
+  {
+    "id": "news_012",
+    "sourceType": "news",
+    "title": "Apple sets WWDC 2026 for June 8-12",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Apple sets WWDC 2026 for June 8-12. Apple announced WWDC 2026 will run June 8-12, online and in-person at Apple Park.",
+        "spoken": "Apple sets WWDC 2026 for June 8-12. Apple announced WWDC 2026 will run June 8-12, online and in-person at Apple Park."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_012"
+    ]
+  },
+  {
+    "id": "news_014",
+    "sourceType": "news",
+    "title": "FedNow transaction volume hits record 50M transactions in April",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "FedNow transaction volume hits record 50M transactions in April. The Federal Reserve's FedNow instant payments service processed a record 50 million transactions in April, up 38% from March.",
+        "spoken": "FedNow transaction volume hits record 50M transactions in April. The Federal Reserve's FedNow instant payments service processed a record 50 million transactions in April, up 38% from March."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_014"
+    ]
+  },
+  {
+    "id": "news_015",
+    "sourceType": "news",
+    "title": "Google Cloud us-east-1 outage affects multiple SaaS providers",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Google Cloud us-east-1 outage affects multiple SaaS providers. A two-hour outage in Google Cloud's us-east-1 region affected services including Snowflake and Notion. Resolved by 7pm PT.",
+        "spoken": "Google Cloud us-east-1 outage affects multiple SaaS providers. A two-hour outage in Google Cloud's us-east-1 region affected services including Snowflake and Notion. Resolved by 7pm PT."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_015"
+    ]
+  },
+  {
+    "id": "news_018",
+    "sourceType": "news",
+    "title": "PostgreSQL 18 released with native vector indexing improvements",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PostgreSQL 18 released with native vector indexing improvements. PostgreSQL 18 ships with improved pgvector integration and a new asynchronous I/O subsystem.",
+        "spoken": "PostgreSQL 18 released with native vector indexing improvements. PostgreSQL 18 ships with improved pgvector integration and a new asynchronous I/O subsystem."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_018"
+    ]
+  },
+  {
+    "id": "news_019",
+    "sourceType": "news",
+    "title": "Marvel announces 'Avengers: Reckoning' cast at Cannes",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Marvel announces 'Avengers: Reckoning' cast at Cannes. Marvel revealed the cast for 'Avengers: Reckoning' at the Cannes Film Festival.",
+        "spoken": "Marvel announces 'Avengers: Reckoning' cast at Cannes. Marvel revealed the cast for 'Avengers: Reckoning' at the Cannes Film Festival."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_019"
+    ]
+  },
+  {
+    "id": "news_020",
+    "sourceType": "news",
+    "title": "Saudi PIF acquires gaming studio Embracer for $4.5B",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Saudi PIF acquires gaming studio Embracer for $4.5B. Saudi Arabia's Public Investment Fund agreed to acquire Embracer Group for $4.5B.",
+        "spoken": "Saudi PIF acquires gaming studio Embracer for $4.5B. Saudi Arabia's Public Investment Fund agreed to acquire Embracer Group for $4.5B."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_020"
+    ]
+  },
+  {
+    "id": "news_023",
+    "sourceType": "news",
+    "title": "WMO confirms 2025 was hottest year on record",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "WMO confirms 2025 was hottest year on record. The World Meteorological Organization confirmed 2025 was the hottest year on record, 1.62°C above pre-industrial levels.",
+        "spoken": "WMO confirms 2025 was hottest year on record. The World Meteorological Organization confirmed 2025 was the hottest year on record, 1.62°C above pre-industrial levels."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_023"
+    ]
+  },
+  {
+    "id": "news_029",
+    "sourceType": "news",
+    "title": "Manchester United wins FA Cup in extra time",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Manchester United wins FA Cup in extra time. Manchester United won the FA Cup 2-1 in extra time over Manchester City.",
+        "spoken": "Manchester United wins FA Cup in extra time. Manchester United won the FA Cup 2-1 in extra time over Manchester City."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_029"
+    ]
+  },
+  {
+    "id": "news_030",
+    "sourceType": "news",
+    "title": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial. A Phase 3 trial of a new monoclonal antibody therapy showed a 60% reduction in long Covid symptoms over 12 weeks.",
+        "spoken": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial. A Phase 3 trial of a new monoclonal antibody therapy showed a 60% reduction in long Covid symptoms over 12 weeks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_030"
+    ]
+  }
+]
+
+Return only valid JSON with this shape:
+{
+  "outline": {
+    "themes": [],
+    "sections": [],
+    "mustIncludeCandidateIds": [],
+    "excludedCandidateIds": [],
+    "discardedInputItems": [],
+    "explorationReasoning": []
+  },
+  "draft": {
+    "sections": [],
+    "fullTextWithSectionMarkers": "",
+    "finalTtsText": ""
+  }
+}
+
+---
+
+Revise the briefing JSON to fix these validation issues.
+Keep the same JSON shape. Do not add unsupported facts. Use only candidate speakableFacts.
+Do not reveal restrictedFacts.
+
+Validation issues:
+[
+  {
+    "validator": "SpokenNumberValidationRule",
+    "severity": "error",
+    "message": "Numbers and units must be written in spoken form."
+  },
+  {
+    "validator": "DurationValidationRule",
+    "severity": "error",
+    "message": "Estimated duration 148 seconds is outside 60 to 90 seconds."
+  }
+]
+
+Candidate constraints:
+[
+  {
+    "id": "calendar_conflict_cal_006_cal_007",
+    "sourceType": "calendar",
+    "title": "Schedule conflict: Quick call with Maya and Customer interview — ACME Bank product team",
+    "topicTags": [
+      "schedule",
+      "schedule_conflict",
+      "personal_family",
+      "customer_research"
+    ],
+    "score": {
+      "value": 100,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "calendar_overlap",
+          "reason": "Quick call with Maya overlaps with Customer interview — ACME Bank product team; this is a hard schedule risk.",
+          "delta": 90
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Quick call with Maya overlaps Customer interview — ACME Bank product team",
+        "spoken": "Your one o'clock Maya call overlaps with the customer interview at one fifteen."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_006",
+      "cal_007"
+    ]
+  },
+  {
+    "id": "cal_006",
+    "sourceType": "calendar",
+    "title": "Quick call with Maya",
+    "topicTags": [
+      "schedule",
+      "personal_family"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_maya",
+          "reason": "Maya Chen is a tracked family entity.",
+          "delta": 40
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Quick call with Maya. Family call — Mom's birthday planning.",
+        "spoken": "Quick call with Maya. Family call — Mom's birthday planning."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_006"
+    ]
+  },
+  {
+    "id": "cal_009",
+    "sourceType": "calendar",
+    "title": "Compliance sync — EU PSD3 implications",
+    "topicTags": [
+      "schedule",
+      "psd3"
+    ],
+    "score": {
+      "value": 40,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 is a relevant fintech regulation theme.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Compliance sync — EU PSD3 implications. Rahul will walk through final PSD3 text and what it means for our SCA flow.",
+        "spoken": "Compliance sync — EU PSD3 implications. Rahul will walk through final PSD3 text and what it means for our SCA flow."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_009"
+    ]
+  },
+  {
+    "id": "cal_008",
+    "sourceType": "calendar",
+    "title": "Board prep with Alex Wong (CEO)",
+    "topicTags": [
+      "schedule",
+      "board_prep"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_board_prep",
+          "reason": "Board prep is a priority work theme.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Board prep with Alex Wong (CEO). Walk through payments revenue slides for Monday's board meeting.",
+        "spoken": "Board prep with Alex Wong (CEO). Walk through payments revenue slides for Monday's board meeting."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_008"
+    ]
+  },
+  {
+    "id": "cal_005",
+    "sourceType": "calendar",
+    "title": "Lunch with Sam Reyes (Stripe Partnerships)",
+    "topicTags": [
+      "schedule",
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lunch with Sam Reyes (Stripe Partnerships). Quarterly catchup. Sam is bringing Jess Park, their new partner team lead.",
+        "spoken": "Lunch with Sam Reyes (Stripe Partnerships). Quarterly catchup. Sam is bringing Jess Park, their new partner team lead."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_005"
+    ]
+  },
+  {
+    "id": "cal_010",
+    "sourceType": "calendar",
+    "title": "Competitive teardown — Lyra Finance v3 SDK",
+    "topicTags": [
+      "schedule",
+      "competitor_lyra"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is a tracked competitor.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Competitive teardown — Lyra Finance v3 SDK. Internal review of Lyra's latest SDK release.",
+        "spoken": "Competitive teardown — Lyra Finance v3 SDK. Internal review of Lyra's latest SDK release."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_010"
+    ]
+  },
+  {
+    "id": "cal_001",
+    "sourceType": "calendar",
+    "title": "Team standup",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Team standup. Daily team standup.",
+        "spoken": "Team standup. Daily team standup."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_001"
+    ]
+  },
+  {
+    "id": "cal_002",
+    "sourceType": "calendar",
+    "title": "Q2 roadmap review — Payments",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Q2 roadmap review — Payments. Walk through Q2 commitments. Jordan owns the agenda.",
+        "spoken": "Q2 roadmap review — Payments. Walk through Q2 commitments. Jordan owns the agenda."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_002"
+    ]
+  },
+  {
+    "id": "cal_003",
+    "sourceType": "calendar",
+    "title": "1:1 with Priya Sharma (VP Eng)",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "1:1 with Priya Sharma (VP Eng). Weekly 1:1.",
+        "spoken": "1:1 with Priya Sharma (VP Eng). Weekly 1:1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_003"
+    ]
+  },
+  {
+    "id": "cal_004",
+    "sourceType": "calendar",
+    "title": "Focus block — draft payments launch comms",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Focus block — draft payments launch comms. Self-scheduled focus time.",
+        "spoken": "Focus block — draft payments launch comms. Self-scheduled focus time."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_004"
+    ]
+  },
+  {
+    "id": "cal_007",
+    "sourceType": "calendar",
+    "title": "Customer interview — ACME Bank product team",
+    "topicTags": [
+      "schedule",
+      "customer_research"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Customer interview — ACME Bank product team. Discovery interview on multi-rail payments.",
+        "spoken": "Customer interview — ACME Bank product team. Discovery interview on multi-rail payments."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "cal_007"
+    ]
+  },
+  {
+    "id": "cal_011",
+    "sourceType": "calendar",
+    "title": "Personal appointment",
+    "topicTags": [
+      "schedule"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Personal appointment",
+        "spoken": "You have a private appointment later today."
+      }
+    ],
+    "restrictedFacts": [
+      {
+        "redactedLabel": "private calendar details",
+        "reason": "Private calendar event details must not be spoken."
+      }
+    ],
+    "originalItemIds": [
+      "cal_011"
+    ]
+  },
+  {
+    "id": "em_009",
+    "sourceType": "email",
+    "title": "ACTION REQUIRED: credential rotation by May 20",
+    "topicTags": [
+      "vendor_plaid"
+    ],
+    "score": {
+      "value": 75,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_action_required",
+          "reason": "Action-required email needs attention.",
+          "delta": 35
+        },
+        {
+          "source": "rule",
+          "label": "boost_plaid",
+          "reason": "Plaid is a tracked integration vendor.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "ACTION REQUIRED: credential rotation by May 20. Plaid is requiring all partners to rotate API credentials by 2026-05-20. After that date, unrotated keys will be revoked. Infra is CC'd but Jordan is the listed owner.",
+        "spoken": "ACTION REQUIRED: credential rotation by May 20. Plaid is requiring all partners to rotate API credentials by 2026-05-20. After that date, unrotated keys will be revoked. Infra is CC'd but Jordan is the listed owner."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_009"
+    ]
+  },
+  {
+    "id": "em_011",
+    "sourceType": "email",
+    "title": "PSD3 final text dropped overnight — please read before 3pm sync",
+    "topicTags": [
+      "psd3"
+    ],
+    "score": {
+      "value": 75,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_action_required",
+          "reason": "Action-required email needs attention.",
+          "delta": 35
+        },
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 affects the user's fintech work.",
+          "delta": 30
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PSD3 final text dropped overnight — please read before 3pm sync. The EU published the final PSD3 text overnight. Material changes to SCA exemption thresholds and a new fraud-data-sharing requirement that affects our checkout flow. Rahul has annotated the key sections in the linked doc.",
+        "spoken": "PSD3 final text dropped overnight — please read before 3pm sync. The EU published the final PSD3 text overnight. Material changes to SCA exemption thresholds and a new fraud-data-sharing requirement that affects our checkout flow. Rahul has annotated the key sections in the linked doc."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_011"
+    ]
+  },
+  {
+    "id": "em_007",
+    "sourceType": "email",
+    "title": "Daily Update: The new shape of platform fees in fintech",
+    "topicTags": [
+      "partner_stripe",
+      "company_launch"
+    ],
+    "score": {
+      "value": 55,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs launch and product context should be surfaced.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Daily Update: The new shape of platform fees in fintech. Long-form analysis of how interchange compression is reshaping platform fee models. Mentions Cobalt Labs and Stripe as examples in the third paragraph.",
+        "spoken": "Daily Update: The new shape of platform fees in fintech. Long-form analysis of how interchange compression is reshaping platform fee models. Mentions Cobalt Labs and Stripe as examples in the third paragraph."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_007"
+    ]
+  },
+  {
+    "id": "em_008",
+    "sourceType": "email",
+    "title": "free at 1?",
+    "topicTags": [
+      "personal_family"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_maya",
+          "reason": "Maya Chen is a tracked family entity.",
+          "delta": 40
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "free at 1?. Maya wants a quick call at 1pm to lock in Mom's surprise birthday plans for next weekend. Mentions she already booked the restaurant tentatively.",
+        "spoken": "free at 1?. Maya wants a quick call at 1pm to lock in Mom's surprise birthday plans for next weekend. Mentions she already booked the restaurant tentatively."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_008"
+    ]
+  },
+  {
+    "id": "em_010",
+    "sourceType": "email",
+    "title": "Top 10 stories on HN this week",
+    "topicTags": [
+      "company_launch"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs launch and product context should be surfaced.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Top 10 stories on HN this week. Weekly digest of trending HN stories. Includes one Cobalt Labs Show HN that hit #1.",
+        "spoken": "Top 10 stories on HN this week. Weekly digest of trending HN stories. Includes one Cobalt Labs Show HN that hit #1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_010"
+    ]
+  },
+  {
+    "id": "em_003",
+    "sourceType": "email",
+    "title": "Looking forward to lunch tomorrow",
+    "topicTags": [
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 30,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 20
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Looking forward to lunch tomorrow. Sam confirms 12pm at Souvla and notes he is bringing Jess Park (new partner team lead at Stripe). Hints they want to talk about extending the integration to Stripe Issuing.",
+        "spoken": "Looking forward to lunch tomorrow. Sam confirms 12pm at Souvla and notes he is bringing Jess Park (new partner team lead at Stripe). Hints they want to talk about extending the integration to Stripe Issuing."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_003"
+    ]
+  },
+  {
+    "id": "em_001",
+    "sourceType": "email",
+    "title": "Board deck — need your eyes on payments revenue slides before 2pm Friday",
+    "topicTags": [
+      "board_prep"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Board deck — need your eyes on payments revenue slides before 2pm Friday. CEO asks Jordan to review slides 8-14 of the Q1 board deck before their 2pm prep. Flags the ARR projection chart as the most important one.",
+        "spoken": "Board deck — need your eyes on payments revenue slides before 2pm Friday. CEO asks Jordan to review slides 8-14 of the Q1 board deck before their 2pm prep. Flags the ARR projection chart as the most important one."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_001"
+    ]
+  },
+  {
+    "id": "em_002",
+    "sourceType": "email",
+    "title": "Agenda for our 1:1",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Agenda for our 1:1. Priya wants to discuss the payments API GA timeline and whether we can pull it forward two weeks. Asks Jordan to come with a recommendation.",
+        "spoken": "Agenda for our 1:1. Priya wants to discuss the payments API GA timeline and whether we can pull it forward two weeks. Asks Jordan to come with a recommendation."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_002"
+    ]
+  },
+  {
+    "id": "em_006",
+    "sourceType": "email",
+    "title": "Your AWS bill increased 23% this month",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Your AWS bill increased 23% this month. AWS bill projection for May is 23% higher than April, driven by RDS and Bedrock usage. Finance is CC'd.",
+        "spoken": "Your AWS bill increased 23% this month. AWS bill projection for May is 23% higher than April, driven by RDS and Bedrock usage. Finance is CC'd."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_006"
+    ]
+  },
+  {
+    "id": "em_013",
+    "sourceType": "email",
+    "title": "Escalation: enterprise customer complaint re: onboarding flow",
+    "topicTags": [
+      "board_prep"
+    ],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Escalation: enterprise customer complaint re: onboarding flow. A top-20 enterprise customer (Vertex Capital) has escalated repeated drop-off in the KYC step of onboarding. Support requests product input by Monday.",
+        "spoken": "Escalation: enterprise customer complaint re: onboarding flow. A top-20 enterprise customer (Vertex Capital) has escalated repeated drop-off in the KYC step of onboarding. Support requests product input by Monday."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_013"
+    ]
+  },
+  {
+    "id": "em_014",
+    "sourceType": "email",
+    "title": "Re: Re: Re: offsite venue suggestions",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Re: Re: Re: offsite venue suggestions. 15-person team thread debating offsite venues. Dana suggests Tahoe, Marcus pushes back on cost, others chime in.",
+        "spoken": "Re: Re: Re: offsite venue suggestions. 15-person team thread debating offsite venues. Dana suggests Tahoe, Marcus pushes back on cost, others chime in."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_014"
+    ]
+  },
+  {
+    "id": "em_016",
+    "sourceType": "email",
+    "title": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421)",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421). Engineering opened a PR fixing a rounding bug that caused a 1-cent discrepancy on certain JPY conversions. Reviewer requested from Jordan as PM owner.",
+        "spoken": "PR review requested: fix payments rounding on USD-to-JPY conversion (#4421). Engineering opened a PR fixing a rounding bug that caused a 1-cent discrepancy on certain JPY conversions. Reviewer requested from Jordan as PM owner."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_016"
+    ]
+  },
+  {
+    "id": "em_017",
+    "sourceType": "email",
+    "title": "Friday social drinks @ 5pm — Maple Room",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Friday social drinks @ 5pm — Maple Room. Reminder about Friday social drinks in the office at 5pm.",
+        "spoken": "Friday social drinks @ 5pm — Maple Room. Reminder about Friday social drinks in the office at 5pm."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_017"
+    ]
+  },
+  {
+    "id": "em_019",
+    "sourceType": "email",
+    "title": "Bitcoin breaks $200,000 for the first time",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Bitcoin breaks $200,000 for the first time. BTC crossed $200k overnight on heavy spot ETF inflows.",
+        "spoken": "Bitcoin breaks two hundred thousand dollars for the first time. BTC crossed $200k overnight on heavy spot ETF inflows."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "em_019"
+    ]
+  },
+  {
+    "id": "em_020",
+    "sourceType": "email",
+    "title": "Appointment confirmation for May 15, 5:00 PM",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Appointment confirmation for May 15, 5:00 PM",
+        "spoken": "There is a private personal appointment confirmation for later today."
+      }
+    ],
+    "restrictedFacts": [
+      {
+        "redactedLabel": "medical appointment details",
+        "reason": "Medical appointment details must not be spoken."
+      }
+    ],
+    "originalItemIds": [
+      "em_020"
+    ]
+  },
+  {
+    "id": "news_001",
+    "sourceType": "news",
+    "title": "Cobalt Labs payments platform exits beta with $4B in transaction volume",
+    "topicTags": [
+      "company_launch",
+      "partner_stripe",
+      "ai_product"
+    ],
+    "score": {
+      "value": 100,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_cobalt",
+          "reason": "Cobalt Labs is the user's company and launch news should always be surfaced.",
+          "delta": 50
+        },
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Cobalt Labs payments platform exits beta with $4B in transaction volume. Cobalt Labs announced general availability of its payments platform after a six-month beta. The company says it processed $4B in volume during beta with partners including Stripe.",
+        "spoken": "Cobalt Labs payments platform exits beta with four billion dollars in transaction volume. Cobalt Labs announced general availability of its payments platform after a six-month beta. The company says it processed four billion dollars in volume during beta with partners including Stripe."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_001"
+    ]
+  },
+  {
+    "id": "news_002",
+    "sourceType": "news",
+    "title": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules",
+    "topicTags": [
+      "psd3",
+      "fintech_regulation",
+      "ai_product"
+    ],
+    "score": {
+      "value": 55,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_psd3",
+          "reason": "PSD3 is a relevant fintech regulation theme.",
+          "delta": 30
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": true,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules. The European Commission released the final PSD3 text overnight. Notable changes include raised strong customer authentication thresholds and a new mandatory fraud-data-sharing scheme among PSPs. Implementation deadline is 2027.",
+        "spoken": "EU publishes final PSD3 text; SCA exemption thresholds raised, new fraud-sharing rules. The European Commission released the final PSD3 text overnight. Notable changes include raised strong customer authentication thresholds and a new mandatory fraud-data-sharing scheme among PSPs. Implementation deadline is 2027."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_002"
+    ]
+  },
+  {
+    "id": "news_003",
+    "sourceType": "news",
+    "title": "Lyra Finance raises $80M Series C led by Sequoia at $1.2B valuation",
+    "topicTags": [
+      "competitor_lyra",
+      "ai_product"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is the main tracked competitor.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lyra Finance raises $80M Series C led by Sequoia at $1.2B valuation. Lyra Finance, a fintech competitor focused on cross-border payments, raised $80M in a Series C led by Sequoia Capital. The round values Lyra at $1.2B.",
+        "spoken": "Lyra Finance raises eighty million dollars Series C led by Sequoia at one point two billion dollars valuation. Lyra Finance, a fintech competitor focused on cross-border payments, raised eighty million dollars in a Series C led by Sequoia Capital. The round values Lyra at one point two billion dollars."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_003"
+    ]
+  },
+  {
+    "id": "news_005",
+    "sourceType": "news",
+    "title": "Plaid faces class-action lawsuit over alleged data-sharing practices",
+    "topicTags": [
+      "vendor_plaid",
+      "ai_product"
+    ],
+    "score": {
+      "value": 50,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_plaid",
+          "reason": "Plaid is a tracked vendor.",
+          "delta": 25
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Plaid faces class-action lawsuit over alleged data-sharing practices. Plaid is the subject of a new class-action suit alleging that consumer banking data was shared with third parties beyond stated terms. Plaid denies the claims.",
+        "spoken": "Plaid faces class-action lawsuit over alleged data-sharing practices. Plaid is the subject of a new class-action suit alleging that consumer banking data was shared with third parties beyond stated terms. Plaid denies the claims."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_005"
+    ]
+  },
+  {
+    "id": "news_009",
+    "sourceType": "news",
+    "title": "SEC charges crypto exchange Helios with offering unregistered securities",
+    "topicTags": [
+      "fintech_regulation",
+      "ai_product"
+    ],
+    "score": {
+      "value": 45,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_crypto_enforcement",
+          "reason": "Crypto enforcement is allowed by the user's exception policy.",
+          "delta": 20
+        },
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "SEC charges crypto exchange Helios with offering unregistered securities. The SEC filed charges against crypto exchange Helios for offering unregistered securities. Helios said it will contest the charges.",
+        "spoken": "SEC charges crypto exchange Helios with offering unregistered securities. The SEC filed charges against crypto exchange Helios for offering unregistered securities. Helios said it will contest the charges."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_009"
+    ]
+  },
+  {
+    "id": "news_004",
+    "sourceType": "news",
+    "title": "Stripe launches Issuing API in five new markets including Brazil and India",
+    "topicTags": [
+      "partner_stripe"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_stripe",
+          "reason": "Stripe is a tracked partner.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Stripe launches Issuing API in five new markets including Brazil and India. Stripe expanded its Issuing product to five additional markets. Brazil and India support both virtual and physical card issuance.",
+        "spoken": "Stripe launches Issuing API in five new markets including Brazil and India. Stripe expanded its Issuing product to five additional markets. Brazil and India support both virtual and physical card issuance."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_004"
+    ]
+  },
+  {
+    "id": "news_022",
+    "sourceType": "news",
+    "title": "Lyra Finance hires former Coinbase CFO as new president",
+    "topicTags": [
+      "competitor_lyra"
+    ],
+    "score": {
+      "value": 35,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_lyra",
+          "reason": "Lyra Finance is the main tracked competitor.",
+          "delta": 25
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Lyra Finance hires former Coinbase CFO as new president. Lyra Finance announced it has hired Coinbase's former CFO as president, signaling a push into US enterprise sales.",
+        "spoken": "Lyra Finance hires former Coinbase CFO as new president. Lyra Finance announced it has hired Coinbase's former CFO as president, signaling a push into US enterprise sales."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_022"
+    ]
+  },
+  {
+    "id": "news_010",
+    "sourceType": "news",
+    "title": "Anthropic releases Claude 5.0 with 2M-token context window",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Anthropic releases Claude 5.0 with 2M-token context window. Anthropic released Claude 5.0, featuring a 2M-token context window and improved tool-use reliability. Pricing remains unchanged from Claude 4.7.",
+        "spoken": "Anthropic releases Claude five.0 with two million token context window. Anthropic released Claude five.0, featuring a two million token context window and improved tool-use reliability. Pricing remains unchanged from Claude 4.7."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_010"
+    ]
+  },
+  {
+    "id": "news_011",
+    "sourceType": "news",
+    "title": "GitHub Copilot launches agent mode in public preview",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "GitHub Copilot launches agent mode in public preview. GitHub announced public preview of Copilot's agent mode, which can autonomously edit multiple files and run tests. Available to all paid users.",
+        "spoken": "GitHub Copilot launches agent mode in public preview. GitHub announced public preview of Copilot's agent mode, which can autonomously edit multiple files and run tests. Available to all paid users."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_011"
+    ]
+  },
+  {
+    "id": "news_013",
+    "sourceType": "news",
+    "title": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks. OpenAI released Operator-2, an agent model the company says shows a 50% reduction in hallucinations on the AgentBench suite versus Operator-1.",
+        "spoken": "OpenAI announces Operator-2 with 50% fewer hallucinations on agent benchmarks. OpenAI released Operator-2, an agent model the company says shows a 50% reduction in hallucinations on the AgentBench suite versus Operator-1."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_013"
+    ]
+  },
+  {
+    "id": "news_016",
+    "sourceType": "news",
+    "title": "OpenAI o5 sets new state of the art on reasoning benchmarks",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI o5 sets new state of the art on reasoning benchmarks. OpenAI's o5 reasoning model achieves a new SOTA on AIME 2026 and GPQA benchmarks.",
+        "spoken": "OpenAI o5 sets new state of the art on reasoning benchmarks. OpenAI's o5 reasoning model achieves a new SOTA on AIME 2026 and GPQA benchmarks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_016"
+    ]
+  },
+  {
+    "id": "news_017",
+    "sourceType": "news",
+    "title": "Vercel introduces Fluid Compute pricing tier",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Vercel introduces Fluid Compute pricing tier. Vercel announced a new pricing tier that bills only for active CPU time, claiming up to 70% savings on agentic workloads.",
+        "spoken": "Vercel introduces Fluid Compute pricing tier. Vercel announced a new pricing tier that bills only for active CPU time, claiming up to 70% savings on agentic workloads."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_017"
+    ]
+  },
+  {
+    "id": "news_021",
+    "sourceType": "news",
+    "title": "EU AI Act enforcement begins for high-risk AI systems",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "EU AI Act enforcement begins for high-risk AI systems. The EU AI Act's enforcement provisions for high-risk AI systems came into force, with fines up to 7% of global revenue. Financial services AI is in scope.",
+        "spoken": "EU AI Act enforcement begins for high-risk AI systems. The EU AI Act's enforcement provisions for high-risk AI systems came into force, with fines up to 7% of global revenue. Financial services AI is in scope."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_021"
+    ]
+  },
+  {
+    "id": "news_024",
+    "sourceType": "news",
+    "title": "OpenAI signs deal with Walmart to deploy retail agents in stores",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "OpenAI signs deal with Walmart to deploy retail agents in stores. OpenAI announced a multi-year deal with Walmart to deploy in-store AI agents for inventory and customer assistance, starting with 200 US stores.",
+        "spoken": "OpenAI signs deal with Walmart to deploy retail agents in stores. OpenAI announced a multi-year deal with Walmart to deploy in-store AI agents for inventory and customer assistance, starting with 200 US stores."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_024"
+    ]
+  },
+  {
+    "id": "news_025",
+    "sourceType": "news",
+    "title": "Snowflake Q1 earnings beat on AI workload growth",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Snowflake Q1 earnings beat on AI workload growth. Snowflake beat Q1 estimates on revenue and EPS, citing growth from AI-related workloads.",
+        "spoken": "Snowflake Q1 earnings beat on AI workload growth. Snowflake beat Q1 estimates on revenue and EPS, citing growth from AI-related workloads."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_025"
+    ]
+  },
+  {
+    "id": "news_026",
+    "sourceType": "news",
+    "title": "Salesforce announces 1,500 layoffs as part of AI restructuring",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Salesforce announces 1,500 layoffs as part of AI restructuring. Salesforce announced 1,500 layoffs, primarily in sales and support roles. The company said it is reallocating headcount to AI product teams.",
+        "spoken": "Salesforce announces 1,500 layoffs as part of AI restructuring. Salesforce announced 1,500 layoffs, primarily in sales and support roles. The company said it is reallocating headcount to AI product teams."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_026"
+    ]
+  },
+  {
+    "id": "news_027",
+    "sourceType": "news",
+    "title": "Cursor raises $200M Series B at $4B valuation",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Cursor raises $200M Series B at $4B valuation. AI coding tool Cursor raised a $200M Series B led by Thrive Capital at a $4B valuation.",
+        "spoken": "Cursor raises $200M Series B at four billion dollars valuation. AI coding tool Cursor raised a $200M Series B led by Thrive Capital at a four billion dollars valuation."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_027"
+    ]
+  },
+  {
+    "id": "news_028",
+    "sourceType": "news",
+    "title": "DOJ files antitrust suit against Visa over debit network practices",
+    "topicTags": [
+      "ai_product"
+    ],
+    "score": {
+      "value": 25,
+      "reasons": [
+        {
+          "source": "rule",
+          "label": "boost_ai_product",
+          "reason": "AI product applications are an interest area.",
+          "delta": 15
+        }
+      ]
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "DOJ files antitrust suit against Visa over debit network practices. The US Department of Justice filed an antitrust lawsuit against Visa, alleging the company illegally monopolized debit card networks.",
+        "spoken": "DOJ files antitrust suit against Visa over debit network practices. The US Department of Justice filed an antitrust lawsuit against Visa, alleging the company illegally monopolized debit card networks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_028"
+    ]
+  },
+  {
+    "id": "news_012",
+    "sourceType": "news",
+    "title": "Apple sets WWDC 2026 for June 8-12",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Apple sets WWDC 2026 for June 8-12. Apple announced WWDC 2026 will run June 8-12, online and in-person at Apple Park.",
+        "spoken": "Apple sets WWDC 2026 for June 8-12. Apple announced WWDC 2026 will run June 8-12, online and in-person at Apple Park."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_012"
+    ]
+  },
+  {
+    "id": "news_014",
+    "sourceType": "news",
+    "title": "FedNow transaction volume hits record 50M transactions in April",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "FedNow transaction volume hits record 50M transactions in April. The Federal Reserve's FedNow instant payments service processed a record 50 million transactions in April, up 38% from March.",
+        "spoken": "FedNow transaction volume hits record 50M transactions in April. The Federal Reserve's FedNow instant payments service processed a record 50 million transactions in April, up 38% from March."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_014"
+    ]
+  },
+  {
+    "id": "news_015",
+    "sourceType": "news",
+    "title": "Google Cloud us-east-1 outage affects multiple SaaS providers",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Google Cloud us-east-1 outage affects multiple SaaS providers. A two-hour outage in Google Cloud's us-east-1 region affected services including Snowflake and Notion. Resolved by 7pm PT.",
+        "spoken": "Google Cloud us-east-1 outage affects multiple SaaS providers. A two-hour outage in Google Cloud's us-east-1 region affected services including Snowflake and Notion. Resolved by 7pm PT."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_015"
+    ]
+  },
+  {
+    "id": "news_018",
+    "sourceType": "news",
+    "title": "PostgreSQL 18 released with native vector indexing improvements",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "PostgreSQL 18 released with native vector indexing improvements. PostgreSQL 18 ships with improved pgvector integration and a new asynchronous I/O subsystem.",
+        "spoken": "PostgreSQL 18 released with native vector indexing improvements. PostgreSQL 18 ships with improved pgvector integration and a new asynchronous I/O subsystem."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_018"
+    ]
+  },
+  {
+    "id": "news_019",
+    "sourceType": "news",
+    "title": "Marvel announces 'Avengers: Reckoning' cast at Cannes",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Marvel announces 'Avengers: Reckoning' cast at Cannes. Marvel revealed the cast for 'Avengers: Reckoning' at the Cannes Film Festival.",
+        "spoken": "Marvel announces 'Avengers: Reckoning' cast at Cannes. Marvel revealed the cast for 'Avengers: Reckoning' at the Cannes Film Festival."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_019"
+    ]
+  },
+  {
+    "id": "news_020",
+    "sourceType": "news",
+    "title": "Saudi PIF acquires gaming studio Embracer for $4.5B",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Saudi PIF acquires gaming studio Embracer for $4.5B. Saudi Arabia's Public Investment Fund agreed to acquire Embracer Group for $4.5B.",
+        "spoken": "Saudi PIF acquires gaming studio Embracer for $4.5B. Saudi Arabia's Public Investment Fund agreed to acquire Embracer Group for $4.5B."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_020"
+    ]
+  },
+  {
+    "id": "news_023",
+    "sourceType": "news",
+    "title": "WMO confirms 2025 was hottest year on record",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "WMO confirms 2025 was hottest year on record. The World Meteorological Organization confirmed 2025 was the hottest year on record, 1.62°C above pre-industrial levels.",
+        "spoken": "WMO confirms 2025 was hottest year on record. The World Meteorological Organization confirmed 2025 was the hottest year on record, 1.62°C above pre-industrial levels."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_023"
+    ]
+  },
+  {
+    "id": "news_029",
+    "sourceType": "news",
+    "title": "Manchester United wins FA Cup in extra time",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "Manchester United wins FA Cup in extra time. Manchester United won the FA Cup 2-1 in extra time over Manchester City.",
+        "spoken": "Manchester United wins FA Cup in extra time. Manchester United won the FA Cup 2-1 in extra time over Manchester City."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_029"
+    ]
+  },
+  {
+    "id": "news_030",
+    "sourceType": "news",
+    "title": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial",
+    "topicTags": [],
+    "score": {
+      "value": 10,
+      "reasons": []
+    },
+    "mustInclude": false,
+    "filterReasons": [],
+    "speakableFacts": [
+      {
+        "raw": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial. A Phase 3 trial of a new monoclonal antibody therapy showed a 60% reduction in long Covid symptoms over 12 weeks.",
+        "spoken": "New treatment shows 60% reduction in long Covid symptoms in Phase 3 trial. A Phase 3 trial of a new monoclonal antibody therapy showed a 60% reduction in long Covid symptoms over 12 weeks."
+      }
+    ],
+    "restrictedFacts": [],
+    "originalItemIds": [
+      "news_030"
+    ]
+  }
+]
