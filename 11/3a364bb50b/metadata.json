@@ -1,0 +1,18 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "113a364bb50b",
+  "strategy": "manual-commit",
+  "branch": "architecture-draft",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "ARCHITECTURE_DRAFT.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/11/3a364bb50b/0/metadata.json",
+      "transcript": "/11/3a364bb50b/0/full.jsonl",
+      "content_hash": "/11/3a364bb50b/0/content_hash.txt",
+      "prompt": "/11/3a364bb50b/0/prompt.txt"
+    }
+  ]
+}
