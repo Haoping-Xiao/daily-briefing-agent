@@ -7,10 +7,10 @@ allowed
 This project should not be a single LLM prompt that summarizes four JSON files. It should be a small, repeatable Agent system where each information source is exposed to the Agent as a tool. The Agent calls those tools to receive explainable, scored `RankedSourceCandidate[]` outputs, then uses its runtime-loaded know-how to explore cross-source themes and generate the final English TTS briefing from an approved plan.
 
 The most important design principle is:
-
 - `DataSource` only loads data.
 - Source candidate tools are the Agent-facing interface for calendar, email, and news.
 - Each source candidate tool applies source-specific rules, user policy, tags, scoring, and optional model judgment before returning `RankedSourceCandidate[]`.
+- Source-layer rules own deterministic filtering and scoring; source-layer model judgment is reserved for semantic denoising and privacy fallback; the final Agent owns search, association, deduplication, and writing trade-offs.
 - Brief exploration and generation happen inside the Cursor SDK Agent runtime; skills are runtime-loaded know-how documents the Agent may consult, not application classes or domain services.
 - Validators prove that core constraints were met.
 
@@ -93,6 +93,200 @@ flowchart TD
   RuleValidators -->|fail with issues| Agent
   LlmJudges -->|fail with issues| Agent
 ```
+
+## Current Codebase Layout
+
+The current implementation is a TypeScript Node project. The most useful review path is:
+
+1. Start with `src/domain/types.ts` to understand the shared contracts.
+2. Read `src/policy/jordan-policy-compiler.ts`, `src/loaders/`, and `src/processors/` to review deterministic source processing.
+3. Read `src/mcp/` and `src/agent/` to review the Cursor SDK runtime boundary.
+4. Read `src/validators/` and `src/output/` to review the final quality gate and file generation.
+5. Use `tests/` as executable examples for expected behavior.
+
+```text
+.
+├── inputs/
+│   ├── profile.json
+│   ├── calendar.json
+│   ├── emails.json
+│   └── news.json
+├── src/
+│   ├── agent/
+│   ├── data/
+│   ├── domain/
+│   ├── loaders/
+│   ├── mcp/
+│   ├── output/
+│   ├── pipeline/
+│   ├── policy/
+│   ├── processors/
+│   ├── rules/
+│   ├── validators/
+│   ├── cli.ts
+│   └── config.ts
+├── tests/
+├── briefing.txt
+├── briefing.json
+├── package.json
+├── tsconfig.json
+└── vitest.config.ts
+```
+
+### Top-Level Files
+
+- `package.json` defines the runnable project scripts:
+  - `npm test` runs the Vitest suite.
+  - `npm run build` type-checks and emits `dist/`.
+  - `npm run briefing` runs the Cursor SDK-powered briefing pipeline.
+  - `npm run mcp:tools` starts the source-tool MCP server in development.
+- `package-lock.json` pins dependency versions for reproducible installs.
+- `tsconfig.json` configures strict TypeScript with Node ESM output.
+- `vitest.config.ts` configures the Node test environment.
+- `.env.example` documents required environment variables. `.env` and `.env.*` are ignored by git, except `.env.example`.
+- `briefing.txt` and `briefing.json` are generated outputs from `npm run briefing`. They are review artifacts, not source-of-truth logic.
+
+### `src/domain`
+
+- `src/domain/types.ts` contains the shared application contracts:
+  - raw input types
+  - normalized `BriefingItem` variants
+  - policy and rule types
+  - `RankedSourceCandidate`
+  - `BriefingOutline`, `BriefingDraft`, validation issues, and output metadata
+
+This file is the best starting point for reviewing the boundaries between loaders, processors, tools, the Agent runner, validators, and output generation.
+
+### `src/data`
+
+- `src/data/json-file-source.ts` implements `JsonFileSource<T>`.
+
+This layer only reads and parses JSON. It intentionally does not know about user policy, filtering, ranking, or TTS output.
+
+### `src/loaders`
+
+- `src/loaders/profile-loader.ts` validates and normalizes `inputs/profile.json` into `UserProfile`.
+- `src/loaders/calendar-loader.ts` validates calendar input and emits `CalendarBriefingItem[]`.
+- `src/loaders/email-loader.ts` validates email input and emits `EmailBriefingItem[]`.
+- `src/loaders/news-loader.ts` validates news input and emits `NewsBriefingItem[]`.
+
+Loaders preserve provenance and source-specific fields. They do not apply profile-driven scoring or filtering.
+
+### `src/policy`
+
+- `src/policy/jordan-policy-compiler.ts` implements the first-version hard-coded Jordan policy compiler.
+
+It turns `UserProfile` into:
+
+- source-specific `SourcePolicy`
+- Agent-facing `BriefGenerationContext`
+- `ValidationPolicy`
+
+This keeps profile interpretation in one place instead of spreading raw preference prose across loaders or processors.
+
+### `src/rules`
+
+- `src/rules/rule-expression.ts` evaluates composable `RuleExpression` predicates.
+
+Processors use this evaluator for deterministic filters, score boosts, topic tags, and privacy checks.
+
+### `src/processors`
+
+- `src/processors/source-processor.ts` contains shared source-processing behavior:
+  - apply filter rules
+  - apply scoring rules
+  - apply topic tag rules
+  - build serializable `RankedSourceCandidate` objects
+- `src/processors/calendar-source-processor.ts` adds calendar-specific logic, especially overlap detection for `cal_006` and `cal_007`.
+- `src/processors/email-source-processor.ts` runs email items through shared policy processing.
+- `src/processors/news-source-processor.ts` runs news items through shared policy processing.
+- `src/processors/facts.ts` converts raw facts into TTS-safe `speakableFacts` and privacy-safe `restrictedFacts`.
+
+The processors are the main deterministic intelligence layer before the Agent sees any data.
+
+### `src/mcp`
+
+- `src/mcp/tool-runtime.ts` maps MCP tool names to source processors and validates tool input.
+- `src/mcp/daily-briefing-tools.ts` starts the local stdio MCP server and registers:
+  - `calendar_candidates`
+  - `email_candidates`
+  - `news_candidates`
+
+This is the Agent-facing source boundary. The Cursor SDK Agent should call these tools first to obtain the filtered, scored, privacy-reviewed priority list. It may then search or read raw source files only within the configured input data directory when it needs extra context for association, deduplication, or writing decisions.
+
+### `src/pipeline`
+
+- `src/pipeline/source-runtime.ts` wires together:
+  - `JsonFileSource`
+  - domain loaders
+  - `compileJordanPolicy`
+  - source processors
+
+This module is used both by tests and by the MCP tool runtime, so source processing can be verified without invoking Cursor SDK.
+
+### `src/agent`
+
+- `src/agent/cursor-sdk-agent-client.ts` is the thin adapter around `Agent.create`.
+- `src/agent/cursor-sdk-daily-briefing-runner.ts` owns the Cursor SDK local Agent lifecycle:
+  - creates the Agent with `local.cwd`, `local.settingSources: ["project"]`, and inline stdio MCP config
+  - sends the initial prompt
+  - waits for run completion
+  - parses the Agent response
+  - runs validators
+  - sends revision prompts when validation fails
+  - disposes the SDK Agent
+- `src/agent/prompts.ts` builds initial and revision prompts.
+- `src/agent/result-parser.ts` extracts and normalizes Agent JSON into the strict `BriefingOutline` and `BriefingDraft` contract.
+- `src/agent/types.ts` defines runner-facing interfaces and test doubles.
+
+The key review question here is whether the Agent is constrained to use candidate tools and `speakableFacts`, rather than inventing facts or reading raw input files.
+
+### `src/validators`
+
+- `src/validators/rule-validators.ts` checks deterministic output constraints:
+  - English-only output
+  - no Markdown
+  - no URLs or email addresses
+  - spoken numbers
+  - duration range
+  - private or medical detail leakage
+  - repeated "Good morning" opening
+- `src/validators/llm-judge-validators.ts` currently provides heuristic judge behavior for:
+  - must-include coverage
+  - restricted fact leakage
+  - excluded topic fit
+
+The judge file is intentionally adapter-shaped so a stronger LLM judge can replace or supplement the heuristic implementation.
+
+### `src/output`
+
+- `src/output/metadata-builder.ts` computes:
+  - final TTS text from `draft.sections[].text`
+  - included input ids
+  - section character and line ranges
+  - word count
+  - estimated duration at 155 words per minute
+  - must-include coverage metadata
+- `src/output/output-writer.ts` writes `briefing.txt` and `briefing.json`.
+
+The output layer does not trust the model to guess section ranges or duration; it computes them from the final text.
+
+### `src/cli.ts` and `src/config.ts`
+
+- `src/config.ts` parses CLI options and validates `CURSOR_API_KEY`.
+- `src/cli.ts` loads `.env`, creates the source runtime, runs the Cursor SDK Agent pipeline, validates the result, and writes outputs.
+
+### `tests`
+
+- `tests/json-file-source.test.ts` covers JSON loading and parse errors.
+- `tests/loaders-policy.test.ts` covers loaders and Jordan policy compilation.
+- `tests/source-processors.test.ts` covers source-processing traps such as schedule conflicts, private data, Plaid action-required emails, PSD3, Cobalt, sports, entertainment, and bitcoin price filtering.
+- `tests/mcp-tools.test.ts` covers MCP tool runtime mapping and input validation.
+- `tests/cursor-sdk-runner.test.ts` covers the Cursor SDK runner using a fake Agent, so unit tests do not require an API key.
+- `tests/result-parser.test.ts` covers normalization of loose Agent JSON into the strict internal contract.
+- `tests/validators-output.test.ts` covers validators, metadata generation, duration estimation, section ranges, and output writing.
+
+The test suite is designed so deterministic behavior can be reviewed without spending Cursor SDK calls. Only `npm run briefing` requires `CURSOR_API_KEY`.
 
 
 
@@ -204,18 +398,21 @@ class EmailSourceProcessor implements SourceProcessor<EmailBriefingItem> {}
 class NewsSourceProcessor implements SourceProcessor<NewsBriefingItem> {}
 ```
 
-Each source candidate tool can combine two styles of judgment:
+Each source candidate tool can combine two styles of judgment, with a narrow source-layer responsibility:
 
 - Pure rules for deterministic facts and hard constraints.
-- Model-assisted judges for semantic relevance that is hard to capture with simple rules.
+- Model-assisted judges for semantic denoising and privacy fallback that are hard to capture with simple rules.
+
+The source layer should not try to solve cross-source association, deduplication, or final editorial selection. Those decisions belong to the Daily Briefing Agent after it has called all three source tools and, when needed, searched the input data directory. This keeps source processing cheap, explainable, and testable: rules handle deterministic filters and score boosts; model judgments handle semantic exclusions and privacy risks; the Agent handles related-data discovery, cross-source merging, and final writing trade-offs.
 
 For example:
 
 - Calendar conflict detection is pure rule; if detected, it should produce a `mustInclude` candidate with a very high score object and explicit score reasons.
-- `action-required` email labels are pure rule; ambiguous "does Jordan need to act today?" checks can use a model and add model-derived score reasons.
-- Sports, entertainment, and daily crypto price news are pure rule drops; nuanced "is this fintech or AI news relevant to Jordan's work today?" can use a model.
+- `action-required` email labels are pure rule; ambiguous "is this low-value bulk mail or genuinely relevant to Jordan today?" checks can use a model to drop or deprioritize.
+- Sports, entertainment, and daily crypto price news are pure rule drops; nuanced semantic exclusions can use a model when keyword rules would be brittle.
+- Private or medical email details are handled by deterministic privacy rules first; a model-assisted privacy judge can add fallback restrictions when labels or keywords miss sensitive content.
 
-Any rule-based or model-assisted judgment that affects ranking must return structured reasoning. The system should not accept a scoring decision without a reason that can be copied into `score.reasons`. The Agent-facing tool contract must be self-contained JSON: it should include the final numeric score and the reasons directly in the returned candidate, not return ids, pointers, or references to an internal trace store.
+Any rule-based or model-assisted judgment that affects ranking must return structured reasoning. The system should not accept a scoring decision without a reason that can be copied into `score.reasons`, `filterReasons`, `modelJudgments`, or `restrictedFacts`. The Agent-facing tool contract must be self-contained JSON: it should include the final numeric score and the reasons directly in the returned candidate, not return ids, pointers, or references to an internal trace store.
 
 Topic tags are different from rule and scoring reasons. Tags describe the candidate's content themes so the Agent can group items into an outline. Processing labels such as "action required", "private", "automated", or "not interested" belong in score reasons, filter reasons, or restricted facts, not in topic tags.
 
@@ -492,7 +689,7 @@ Examples:
   - score.value: low or dropped
   - filterReasons: user excludes daily crypto price movement
 
-`topicTags` are themes for outline construction, not the audit trail for scoring or filtering. The Agent uses them to discover cross-source clusters such as PSD3, Stripe, Lyra, Cobalt launch, schedule risk, board prep, or AI product news. Rule and model decisions that explain ranking belong in `score.reasons`. Drop or deprioritization explanations belong in `filterReasons`.
+`topicTags` are themes for outline construction, not the audit trail for scoring or filtering. The Agent uses them, together with source search when needed, to discover related cross-source themes such as PSD3, Stripe, Lyra, Cobalt launch, schedule risk, board prep, or AI product news. Rule and model decisions that explain ranking belong in `score.reasons` or `modelJudgments`. Drop or deprioritization explanations belong in `filterReasons`.
 
 `score` must be a concrete, serializable object in the tool response. The Agent should be able to inspect the final number and every reason directly from the returned JSON. The tool must not return `scoreReasonIds`, opaque handles, or pointers to server-side scoring traces.
 
@@ -750,6 +947,32 @@ interface BriefingSectionMetadata {
 ```
 
 Section ids, names, candidate ids, and target word budgets come from `BriefingOutline`. Final `startChar`, `endChar`, `startLine`, and `endLine` are computed by the program from the final `briefing.txt`; the model should not guess ranges.
+
+### Langfuse Observability
+
+Each `CursorSdkDailyBriefingRunner.run()` execution should emit one Langfuse trace named `daily-briefing.run`. The trace is optional at runtime: if `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` are not configured, the pipeline uses a no-op tracer and still produces the briefing.
+
+Trace-level metadata should include:
+
+- `briefingDate`
+- `inputDir`
+- `model`
+- `maxRevisions`
+- final `status`
+- total duration
+- revision count
+
+The trace should contain these observations:
+
+- `source-processing`: a retriever-style observation containing one summary per source. Each summary records candidate count, discarded count, candidate ranking order, `score.value`, `score.reasons`, `mustInclude`, `filterReasons`, `topicTags`, `speakableFacts`, `restrictedFacts`, and discarded item reasons.
+- `cursor-sdk.initial` and `cursor-sdk.revision`: Agent observations for the initial run and any validation-triggered revisions. These record prompt length, prompt preview, Cursor agent id, run id, status, duration, token usage when available, and the set of tools invoked.
+- `tool.<name>`: tool observations created from Cursor SDK `tool_call` stream events. They record tool args, status, truncation flags, and summarized results for tools such as `calendar_candidates`, `email_candidates`, and `news_candidates`.
+- `cursor-events.summary`: one merged stream observation per run. It aggregates assistant text chunks, thinking text, status transitions, task messages, requests, and per-type event counts so the Langfuse trace stays reviewable.
+- `agent-output.outline`: parsed `BriefingOutline`, including themes, section plans, must-include ids, excluded ids, discarded input items, and exploration reasoning.
+- `agent-output.draft`: parsed `BriefingDraft`, including section text, candidate ids, full marked text, and final TTS text.
+- `validation.attempt-N`: evaluator observations for each validation attempt, including issue count, validator names, issue messages, severity, and related candidate ids.
+
+The observability layer must stay outside the core domain logic. The runner depends on a small `DailyBriefingTracer` interface; Langfuse is just one implementation. This keeps unit tests network-free and keeps the briefing pipeline usable without observability credentials.
 
 ## How This Design Handles The Known Dataset Traps
 
