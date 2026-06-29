@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "8b43f52c92bb",
+  "strategy": "manual-commit",
+  "branch": "tracing",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".env.example",
+    "src/observability/create-tracer-from-env.ts",
+    "src/observability/observation-handle.ts",
+    "src/observability/otel-daily-briefing-tracer.ts",
+    "src/observability/providers/langfuse.ts",
+    "src/observability/providers/traceroot.ts",
+    "src/observability/providers/types.ts",
+    "tests/tracing-provider.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/8b/43f52c92bb/0/metadata.json",
+      "transcript": "/8b/43f52c92bb/0/full.jsonl",
+      "content_hash": "/8b/43f52c92bb/0/content_hash.txt",
+      "prompt": "/8b/43f52c92bb/0/prompt.txt"
+    }
+  ]
+}

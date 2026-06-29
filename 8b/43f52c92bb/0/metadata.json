@@ -1,0 +1,87 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "8b43f52c92bb",
+  "session_id": "3ad73824-9f42-4033-9599-655d0b795ed4",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-29T14:02:21.177133Z",
+  "branch": "tracing",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".env.example",
+    "src/observability/create-tracer-from-env.ts",
+    "src/observability/observation-handle.ts",
+    "src/observability/otel-daily-briefing-tracer.ts",
+    "src/observability/providers/langfuse.ts",
+    "src/observability/providers/traceroot.ts",
+    "src/observability/providers/types.ts",
+    "tests/tracing-provider.test.ts"
+  ],
+  "agent": "Cursor",
+  "model": "composer-2.5-fast",
+  "turn_id": "3c46f3c09d82",
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-29T14:02:21.16568Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 2,
+    "human_removed": 39,
+    "total_committed": 0,
+    "total_lines_changed": 41,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 1091,
+      "user_lines_removed": 40,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".cursor/skills/laminar/SKILL.md": 66,
+        ".cursor/skills/laminar/references/cli.md": 110,
+        ".cursor/skills/laminar/references/debugging.md": 210,
+        ".cursor/skills/laminar/references/instrumentation-python.md": 155,
+        ".cursor/skills/laminar/references/instrumentation-typescript.md": 227,
+        ".cursor/skills/laminar/references/migration.md": 53,
+        ".cursor/skills/laminar/references/sql-query-api.md": 94,
+        ".env.example": 4,
+        ".lmnr/project.json": 6,
+        "src/observability/create-tracer-from-env.ts": 17,
+        "src/observability/observation-handle.ts": 82,
+        "src/observability/otel-daily-briefing-tracer.ts": 1,
+        "src/observability/providers/laminar.ts": 23,
+        "src/observability/providers/langfuse.ts": 4,
+        "src/observability/providers/otel-isolated-backend.ts": 31,
+        "src/observability/providers/traceroot.ts": 2,
+        "src/observability/providers/types.ts": 4,
+        "tests/tracing-provider.test.ts": 2
+      },
+      "user_removed_per_file": {
+        ".env.example": 2,
+        "src/observability/create-tracer-from-env.ts": 2,
+        "src/observability/observation-handle.ts": 14,
+        "src/observability/providers/traceroot.ts": 21,
+        "src/observability/providers/types.ts": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1091,
+      "agent_lines_removed": 40
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1091,
+      "agent_lines_removed": 40
+    }
+  ]
+}
