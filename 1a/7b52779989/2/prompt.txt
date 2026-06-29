@@ -15,3 +15,7 @@ traceroot 上报的时候好像需要带上git_repo或者git_ref。帮忙看下�
 ---
 
 现在的 git status 有哪些代码是你改的吗
+
+---
+
+是的，你先 commit 你改的部分。按特性/fix 分
