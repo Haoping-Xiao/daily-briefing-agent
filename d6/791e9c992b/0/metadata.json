@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "d6791e9c992b",
+  "session_id": "3ad73824-9f42-4033-9599-655d0b795ed4",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-29T14:05:10.328215Z",
+  "branch": "tracing",
+  "checkpoints_count": 0,
+  "files_touched": [],
+  "agent": "Cursor",
+  "model": "composer-2.5-fast",
+  "turn_id": "3627c2f3c357",
+  "checkpoint_transcript_start": 76,
+  "transcript_lines_at_start": 76,
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 915,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".cursor/skills/laminar/SKILL.md": 66,
+        ".cursor/skills/laminar/references/cli.md": 110,
+        ".cursor/skills/laminar/references/debugging.md": 210,
+        ".cursor/skills/laminar/references/instrumentation-python.md": 155,
+        ".cursor/skills/laminar/references/instrumentation-typescript.md": 227,
+        ".cursor/skills/laminar/references/migration.md": 53,
+        ".cursor/skills/laminar/references/sql-query-api.md": 94
+      }
+    }
+  ]
+}
