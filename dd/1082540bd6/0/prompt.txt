@@ -1,0 +1,66 @@
+我现在想 compare 不同家的 tracing feature。有 https://github.com/traceroot-ai/ & https://github.com/lmnr-ai/lmnr
+
+
+也就是 tracing 要支持 multi provider. 
+
+帮我 check 一下 langfuse 和他们是否都支持 opentelemetry。如果支持的话，我们架构可以调整成 opentelemetry + tracing provider 的形式，这样可以无缝 switch 。方便我快速 compare 不同家的特性
+
+---
+
+代码已经下载了。/Users/haopingxiao/traceroot。帮我看一下，如果我想要用 OpenTelemetry 这种方式来 switch 不同的 provider，Trace root 支不支持？如果不支持的话，我怎么样做一个 adapter？
+
+---
+
+代码已经下载了。/Users/haopingxiao/traceroot。帮我看一下，如果我想要用 OpenTelemetry 这种方式来 switch 不同的 provider，Trace root 支不支持？如果不支持的话，我怎么样做一个 adapter？不要太多的废话，我不需要你讲 compare 的事情，我只想要先搞tracing 这件事情。
+
+---
+
+我们当前是 langfuse 的嘛，我想要第一步先支持 trace root，后面再支持 lmnr. 架构上你打算怎么调整？我确认一下。
+
+---
+
+架构没什么问题。然后你第一个阶段先是迁移 langfuse. 根据他们的文档。第 2 个阶段，再次接入 traceroot。
+
+---
+
+之前的 langfuse 的依赖有哪些要清的吗？ 之前langfuse 代码清理干净了吗
+
+---
+
+tracing-utils 是干嘛用的。为啥需要这个
+
+---
+
+加在文件的一个说明里面吧，以后看才知道。
+
+---
+
+ok。我这里面应该已经有 langfuse 的 API key 了。你先启动一下项目，跑一下，看一下现在改造之后数据是不是正常上报，以及用 langfuse-cli 看下和之前的数据有没有什么区别。
+
+---
+
+为啥有 error. validator 好像失败了，但是为啥没有重试？解决以下？
+
+---
+
+有很多单独是 span 变成了 trace. 是不对的。这些 span 应该收敛在一个 trace 下面
+
+---
+
+你发一次，我 check 一下
+
+---
+
+你发一次，我 check 一下
+
+---
+
+为啥有这么多条 trace，好像 obs 也还是 trace
+
+---
+
+Execute the selected diff-tab commit-and-create-pull-request action.
+
+---
+
+为啥还有的不提交？

@@ -1,0 +1,62 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "dd1082540bd6",
+  "session_id": "6ee807f7-7533-4ba5-ac2d-d41cfd1f1e8a",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-29T03:12:23.500468Z",
+  "branch": "tracing",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "briefing.json",
+    "briefing.txt",
+    "src/agent/cursor-sdk-daily-briefing-runner.ts",
+    "src/model/model-operation-schemas.ts",
+    "src/observability/observation-handle.ts",
+    "src/observability/providers/langfuse.ts",
+    "src/observability/tracing-utils.ts",
+    "tests/model-operation-enhancer.test.ts"
+  ],
+  "agent": "Cursor",
+  "model": "composer-2.5-fast",
+  "turn_id": "35e51a544d71",
+  "session_metrics": {
+    "turn_count": 16,
+    "context_tokens": 182282,
+    "context_window_size": 200000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-29T03:12:23.483506Z",
+    "agent_lines": 0,
+    "agent_removed": 70,
+    "human_added": 0,
+    "human_modified": 2,
+    "human_removed": 198,
+    "total_committed": 182,
+    "total_lines_changed": 270,
+    "agent_percentage": 25.925925925925924,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 182,
+      "agent_lines_removed": 70
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 182,
+      "agent_lines_removed": 70
+    }
+  ]
+}

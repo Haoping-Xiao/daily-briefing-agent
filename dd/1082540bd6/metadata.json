@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "dd1082540bd6",
+  "strategy": "manual-commit",
+  "branch": "tracing",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "briefing.json",
+    "briefing.txt",
+    "src/agent/cursor-sdk-daily-briefing-runner.ts",
+    "src/model/model-operation-schemas.ts",
+    "src/observability/observation-handle.ts",
+    "src/observability/providers/langfuse.ts",
+    "src/observability/tracing-utils.ts",
+    "tests/model-operation-enhancer.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dd/1082540bd6/0/metadata.json",
+      "transcript": "/dd/1082540bd6/0/full.jsonl",
+      "content_hash": "/dd/1082540bd6/0/content_hash.txt",
+      "prompt": "/dd/1082540bd6/0/prompt.txt"
+    }
+  ]
+}
