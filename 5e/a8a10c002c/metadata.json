@@ -3,12 +3,11 @@
   "checkpoint_id": "5ea8a10c002c",
   "strategy": "manual-commit",
   "branch": "tracing",
-  "checkpoints_count": 2,
+  "checkpoints_count": 1,
   "files_touched": [
     ".env.example",
     "README.md",
-    "src/observability/create-tracer-from-env.ts",
-    "tests/tracing-provider.test.ts"
+    "src/observability/create-tracer-from-env.ts"
   ],
   "sessions": [
     {
