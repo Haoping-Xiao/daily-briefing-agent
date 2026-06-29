@@ -64,3 +64,7 @@ Execute the selected diff-tab commit-and-create-pull-request action.
 ---
 
 为啥还有的不提交？
+
+---
+
+可以，按照 1 来。 忽略的加进 gitignore
