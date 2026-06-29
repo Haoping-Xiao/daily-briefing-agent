@@ -3,9 +3,12 @@
   "checkpoint_id": "1a7b52779989",
   "strategy": "manual-commit",
   "branch": "tracing",
-  "checkpoints_count": 27,
+  "checkpoints_count": 32,
   "files_touched": [
-    "src/observability/providers/traceroot.ts"
+    "src/observability/providers/traceroot-git-context.ts",
+    "src/observability/providers/traceroot-span-processor.ts",
+    "src/observability/providers/traceroot.ts",
+    "tests/traceroot-git-context.test.ts"
   ],
   "sessions": [
     {
@@ -19,6 +22,12 @@
       "transcript": "/1a/7b52779989/1/full.jsonl",
       "content_hash": "/1a/7b52779989/1/content_hash.txt",
       "prompt": "/1a/7b52779989/1/prompt.txt"
+    },
+    {
+      "metadata": "/1a/7b52779989/2/metadata.json",
+      "transcript": "/1a/7b52779989/2/full.jsonl",
+      "content_hash": "/1a/7b52779989/2/content_hash.txt",
+      "prompt": "/1a/7b52779989/2/prompt.txt"
     }
   ]
 }
