@@ -1,0 +1,26 @@
+1. Run `npx lmnr-cli setup` at the project root to get started with Laminar. This command will authenticate the user, save a new project API key to .env, and install the Laminar skill.
+2. Instrument your project with Laminar using the installed skill or the docs:
+https://laminar.sh/docs/tracing/integrations/overview
+3. Run your project.
+4. Verify instrumentation:
+`lmnr-cli sql query "SELECT * FROM traces ORDER BY start_time DESC LIMIT 1" --json `
+5. View your traces in the browser
+
+
+上面是 lmnr 的 instruction, 作为 reference, not truth. provider 加下 lmnr。用我们的opentelemetry 的multi provider方案。
+
+---
+
+他不是会自动有个 API key 吗，你帮我 setup， 跑下，然后我直接去他们界面查看有没有 trace
+
+---
+
+为啥是这个样子，你 debug 一下
+
+---
+
+为啥是这个样子，你 debug 一下。 可以用 Langfuse cli, 对比正确结果，debug 一下
+
+---
+
+再跑一次，我看看
