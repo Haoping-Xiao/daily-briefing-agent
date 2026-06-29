@@ -1,0 +1,199 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "1a7b52779989",
+  "session_id": "6ee807f7-7533-4ba5-ac2d-d41cfd1f1e8a",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-29T13:39:25.799358Z",
+  "branch": "tracing",
+  "checkpoints_count": 22,
+  "files_touched": [
+    "src/observability/providers/traceroot.ts"
+  ],
+  "agent": "Cursor",
+  "model": "composer-2.5-fast",
+  "turn_id": "441f579fa0c1",
+  "session_metrics": {
+    "turn_count": 39,
+    "context_tokens": 182282,
+    "context_window_size": 200000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-29T13:39:25.772342Z",
+    "agent_lines": 13,
+    "agent_removed": 1,
+    "human_added": 110,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 125,
+    "total_lines_changed": 126,
+    "agent_percentage": 11.11111111111111,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 14,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 15,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 305,
+      "agent_lines_removed": 5
+    },
+    {
+      "checkpoint_number": 16,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 305,
+      "agent_lines_removed": 5
+    },
+    {
+      "checkpoint_number": 17,
+      "user_lines_added": 134,
+      "user_lines_removed": 14,
+      "agent_lines_added": 305,
+      "agent_lines_removed": 5,
+      "user_added_per_file": {
+        ".env.example": 3,
+        "src/observability/create-tracer-from-env.ts": 17,
+        "src/observability/observation-handle.ts": 69,
+        "src/observability/providers/laminar.ts": 42,
+        "src/observability/providers/types.ts": 1,
+        "tests/tracing-provider.test.ts": 2
+      },
+      "user_removed_per_file": {
+        ".env.example": 1,
+        "src/observability/create-tracer-from-env.ts": 2,
+        "src/observability/observation-handle.ts": 10,
+        "src/observability/providers/types.ts": 1
+      }
+    },
+    {
+      "checkpoint_number": 18,
+      "user_lines_added": 44,
+      "user_lines_removed": 0,
+      "agent_lines_added": 394,
+      "agent_lines_removed": 18,
+      "user_added_per_file": {
+        "src/observability/providers/laminar.ts": 42,
+        "tests/tracing-provider.test.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 19,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 438,
+      "agent_lines_removed": 18
+    },
+    {
+      "checkpoint_number": 20,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 438,
+      "agent_lines_removed": 18
+    },
+    {
+      "checkpoint_number": 21,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 438,
+      "agent_lines_removed": 18
+    },
+    {
+      "checkpoint_number": 22,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 438,
+      "agent_lines_removed": 18
+    }
+  ]
+}
