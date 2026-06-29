@@ -1,6 +1,3 @@
-import { LangfuseSpanProcessor } from "@langfuse/otel";
-import { startObservation } from "@langfuse/tracing";
-import { NodeSDK } from "@opentelemetry/sdk-node";
 import type { RunResult, SDKMessage, SendOptions } from "@cursor/sdk";
 import type { AgentRunPayload } from "../agent/types.js";
 import type {
@@ -13,54 +10,26 @@ import type {
   SourceProcessingObservation,
   ValidationAttemptObservation,
 } from "./daily-briefing-tracer.js";
-import { NoopDailyBriefingTracer } from "./daily-briefing-tracer.js";
+import { startObservationHandle, type ObservationHandle } from "./observation-handle.js";
+import type { TracingBackend } from "./providers/types.js";
+import {
+  appendStreamEvent,
+  createStreamSummary,
+  displayToolName,
+  errorMessage,
+  isRecord,
+  numberField,
+  summarizeDraft,
+  summarizeToolResult,
+  truncate,
+} from "./tracing-utils.js";
 
-type LangfuseHandle = {
-  update(attributes: Record<string, unknown>): LangfuseHandle;
-  end(): void;
-  startObservation(name: string, attributes?: Record<string, unknown>, options?: { asType: string }): LangfuseHandle;
-};
-
-export function createLangfuseDailyBriefingTracerFromEnv(env: NodeJS.ProcessEnv = process.env): DailyBriefingTracer {
-  const publicKey = env.LANGFUSE_PUBLIC_KEY?.trim();
-  const secretKey = env.LANGFUSE_SECRET_KEY?.trim();
-  const baseUrl = env.LANGFUSE_BASE_URL?.trim();
-
-  if (!publicKey || !secretKey) {
-    return new NoopDailyBriefingTracer();
-  }
-
-  try {
-    return new LangfuseDailyBriefingTracer({
-      publicKey,
-      secretKey,
-      baseUrl,
-    });
-  } catch {
-    return new NoopDailyBriefingTracer();
-  }
-}
-
-class LangfuseDailyBriefingTracer implements DailyBriefingTracer {
-  private readonly sdk: NodeSDK;
-  private readonly spanProcessor: LangfuseSpanProcessor;
-
-  constructor(input: { publicKey: string; secretKey: string; baseUrl?: string }) {
-    this.spanProcessor = new LangfuseSpanProcessor({
-      publicKey: input.publicKey,
-      secretKey: input.secretKey,
-      baseUrl: input.baseUrl,
-      exportMode: "immediate",
-      mask: ({ data }) => redactSecrets(data),
-    });
-    this.sdk = new NodeSDK({
-      spanProcessors: [this.spanProcessor],
-    });
-    this.sdk.start();
-  }
+export class OtelDailyBriefingTracer implements DailyBriefingTracer {
+  constructor(private readonly backend: TracingBackend) {}
 
   startTrace(input: DailyBriefingTraceInput): DailyBriefingTrace {
-    const root = startObservation(
+    const root = startObservationHandle(
+      this.backend.provider,
       "daily-briefing.run",
       {
         input: {
@@ -72,35 +41,31 @@ class LangfuseDailyBriefingTracer implements DailyBriefingTracer {
           maxRevisions: input.maxRevisions,
         },
       },
-      { asType: "agent" },
-    ) as LangfuseHandle;
-    return new LangfuseDailyBriefingTrace(root, input);
+      "agent",
+    );
+    return new OtelDailyBriefingTrace(root, input);
   }
 
   async flush(): Promise<void> {
-    try {
-      await this.spanProcessor.forceFlush();
-    } catch {}
+    await this.backend.flush();
   }
 
   async shutdown(): Promise<void> {
-    try {
-      await this.sdk.shutdown();
-    } catch {}
+    await this.backend.shutdown();
   }
 }
 
-class LangfuseDailyBriefingTrace implements DailyBriefingTrace {
+class OtelDailyBriefingTrace implements DailyBriefingTrace {
   private readonly startedAt = Date.now();
   private validationIssueCount = 0;
 
   constructor(
-    private readonly root: LangfuseHandle,
+    private readonly root: ObservationHandle,
     private readonly input: DailyBriefingTraceInput,
   ) {}
 
   recordSourceProcessing(summary: SourceProcessingObservation): void {
-    const span = this.root.startObservation(
+    const span = this.root.startChild(
       "source-processing",
       {
         input: {
@@ -113,18 +78,18 @@ class LangfuseDailyBriefingTrace implements DailyBriefingTrace {
           mustIncludeCount: summary.totals.mustIncludeCount,
         },
       },
-      { asType: "retriever" },
+      "retriever",
     );
     span.end();
   }
 
   startAgentRun(input: AgentRunTraceInput): AgentRunTrace {
-    return new LangfuseAgentRunTrace(this.root, input);
+    return new OtelAgentRunTrace(this.root, input);
   }
 
   recordValidationAttempt(summary: ValidationAttemptObservation): void {
     this.validationIssueCount += summary.issueCount;
-    const span = this.root.startObservation(
+    const span = this.root.startChild(
       `validation.attempt-${summary.attempt}`,
       {
         input: { attempt: summary.attempt },
@@ -135,7 +100,7 @@ class LangfuseDailyBriefingTrace implements DailyBriefingTrace {
         },
         level: summary.issueCount > 0 ? "WARNING" : "DEFAULT",
       },
-      { asType: "evaluator" },
+      "evaluator",
     );
     span.end();
   }
@@ -173,7 +138,7 @@ class LangfuseDailyBriefingTrace implements DailyBriefingTrace {
   }
 }
 
-class LangfuseAgentRunTrace implements AgentRunTrace {
+class OtelAgentRunTrace implements AgentRunTrace {
   readonly sendOptions: SendOptions = {
     onDelta: ({ update }) => {
       this.recordDelta(update);
@@ -183,16 +148,19 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
     },
   };
 
-  private readonly span: LangfuseHandle;
-  private readonly toolCalls = new Map<string, { observation: LangfuseHandle; name: string }>();
+  private readonly span: ObservationHandle;
+  private readonly toolCalls = new Map<string, { observation: ObservationHandle; name: string }>();
   private readonly toolNames = new Set<string>();
   private usageDetails: Record<string, number> | undefined;
   private deltaCount = 0;
   private stepCount = 0;
   private readonly streamSummary = createStreamSummary();
 
-  constructor(parent: LangfuseHandle, private readonly input: AgentRunTraceInput) {
-    this.span = parent.startObservation(
+  constructor(
+    parent: ObservationHandle,
+    private readonly input: AgentRunTraceInput,
+  ) {
+    this.span = parent.startChild(
       `cursor-sdk.${input.kind}`,
       {
         input: {
@@ -206,7 +174,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
           model: input.model,
         },
       },
-      { asType: "agent" },
+      "agent",
     );
   }
 
@@ -239,7 +207,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
   }
 
   recordParsedPayload(payload: AgentRunPayload): void {
-    const outline = this.span.startObservation(
+    const outline = this.span.startChild(
       "agent-output.outline",
       {
         output: payload.outline,
@@ -250,11 +218,11 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
           excludedCount: payload.outline.excludedCandidateIds.length,
         },
       },
-      { asType: "span" },
+      "span",
     );
     outline.end();
 
-    const draft = this.span.startObservation(
+    const draft = this.span.startChild(
       "agent-output.draft",
       {
         output: summarizeDraft(payload.draft),
@@ -263,7 +231,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
           finalTextLength: payload.draft.finalTtsText.length,
         },
       },
-      { asType: "generation" },
+      "generation",
     );
     draft.end();
   }
@@ -298,7 +266,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
     const totalEvents = Object.values(this.streamSummary.counts).reduce((sum, count) => sum + count, 0);
     if (totalEvents === 0) return;
 
-    const summary = this.span.startObservation(
+    const summary = this.span.startChild(
       "cursor-events.summary",
       {
         output: {
@@ -315,7 +283,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
           thinkingEventCount: this.streamSummary.counts.thinking ?? 0,
         },
       },
-      { asType: "event" },
+      "event",
     );
     summary.end();
   }
@@ -341,7 +309,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
     this.toolNames.add(toolName);
     let tool = this.toolCalls.get(event.call_id);
     if (!tool) {
-      const observation = this.span.startObservation(
+      const observation = this.span.startChild(
         `tool.${toolName}`,
         {
           input: {
@@ -355,7 +323,7 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
             sdkToolName: event.name,
           },
         },
-        { asType: "tool" },
+        "tool",
       );
       tool = { observation, name: toolName };
       this.toolCalls.set(event.call_id, tool);
@@ -381,114 +349,4 @@ class LangfuseAgentRunTrace implements AgentRunTrace {
       this.toolCalls.delete(event.call_id);
     }
   }
-}
-
-function displayToolName(event: Extract<SDKMessage, { type: "tool_call" }>): string {
-  if (event.name !== "mcp" || !isRecord(event.args)) return event.name;
-  const provider = typeof event.args.providerIdentifier === "string" ? event.args.providerIdentifier : "mcp";
-  const toolName = typeof event.args.toolName === "string" ? event.args.toolName : "unknown";
-  return `${provider}.${toolName}`;
-}
-
-function summarizeDraft(draft: AgentRunPayload["draft"]): Record<string, unknown> {
-  return {
-    sections: draft.sections.map((section) => ({
-      sectionId: section.sectionId,
-      title: section.title,
-      candidateIds: section.candidateIds,
-      text: section.text,
-      textLength: section.text.length,
-    })),
-    fullTextWithSectionMarkers: draft.fullTextWithSectionMarkers,
-    finalTtsText: draft.finalTtsText,
-  };
-}
-
-function summarizeToolResult(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return {
-      count: value.length,
-      items: value.slice(0, 50),
-    };
-  }
-  if (typeof value === "string") {
-    return truncate(value, 8000);
-  }
-  return value;
-}
-
-type StreamSummary = {
-  counts: Record<string, number>;
-  assistantText: string[];
-  thinkingText: string[];
-  statuses: Array<{ status: string; message?: string }>;
-  tasks: Array<{ status?: string; text?: string }>;
-  requests: Array<{ requestId: string }>;
-};
-
-function createStreamSummary(): StreamSummary {
-  return {
-    counts: {},
-    assistantText: [],
-    thinkingText: [],
-    statuses: [],
-    tasks: [],
-    requests: [],
-  };
-}
-
-function appendStreamEvent(summary: StreamSummary, event: SDKMessage): void {
-  summary.counts[event.type] = (summary.counts[event.type] ?? 0) + 1;
-  if (event.type === "assistant") {
-    const text = event.message.content
-      .map((block) => {
-        if (block.type === "text") return block.text;
-        return `[tool_use:${block.name}]`;
-      })
-      .join("");
-    if (text.trim()) summary.assistantText.push(text);
-    return;
-  }
-  if (event.type === "thinking") {
-    if (event.text.trim()) summary.thinkingText.push(event.text);
-    return;
-  }
-  if (event.type === "status") {
-    summary.statuses.push({ status: event.status, message: event.message });
-    return;
-  }
-  if (event.type === "task") {
-    summary.tasks.push({ status: event.status, text: event.text });
-    return;
-  }
-  if (event.type === "request") {
-    summary.requests.push({ requestId: event.request_id });
-  }
-}
-
-function redactSecrets(data: unknown): unknown {
-  if (typeof data === "string") {
-    return data
-      .replace(/cursor_[A-Za-z0-9_-]+/g, "cursor_***")
-      .replace(/sk-lf-[A-Za-z0-9_-]+/g, "sk-lf-***")
-      .replace(/pk-lf-[A-Za-z0-9_-]+/g, "pk-lf-***");
-  }
-  return data;
-}
-
-function truncate(value: string, maxLength: number): string {
-  if (value.length <= maxLength) return value;
-  return `${value.slice(0, maxLength)}... [truncated ${value.length - maxLength} chars]`;
-}
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function numberField(value: unknown): number {
-  return typeof value === "number" ? value : 0;
 }
