@@ -10,7 +10,13 @@ The original assignment prompt is preserved in `ASSIGNMENT.md`. Design decisions
 - npm
 - `CURSOR_API_KEY` for running the Cursor SDK agent
 
-Langfuse is optional. If `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and `LANGFUSE_BASE_URL` are not set, tracing falls back to a no-op tracer.
+Tracing is optional. Set `TRACING_PROVIDER` to choose the backend:
+
+- `langfuse` (default)
+- `traceroot`
+- `noop` (also `none`, `off`, `false`, `disabled`)
+
+If the selected provider is missing required API keys, tracing falls back to a no-op tracer.
 
 ## Setup
 

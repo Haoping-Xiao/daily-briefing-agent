@@ -4,10 +4,13 @@ import { createLangfuseBackend } from "./providers/langfuse.js";
 import { createTraceRootBackend } from "./providers/traceroot.js";
 import type { TracingBackend, TracingProviderName } from "./providers/types.js";
 
-function resolveProvider(env: NodeJS.ProcessEnv): TracingProviderName | "noop" {
+export function resolveTracingProvider(env: NodeJS.ProcessEnv = process.env): TracingProviderName | "noop" {
   const raw = (env.TRACING_PROVIDER ?? "langfuse").trim().toLowerCase();
   if (raw === "langfuse" || raw === "traceroot") {
     return raw;
+  }
+  if (raw === "noop" || raw === "none" || raw === "off" || raw === "false" || raw === "disabled") {
+    return "noop";
   }
   return "noop";
 }
@@ -20,7 +23,7 @@ function createBackend(provider: TracingProviderName, env: NodeJS.ProcessEnv): T
 }
 
 export function createDailyBriefingTracerFromEnv(env: NodeJS.ProcessEnv = process.env): DailyBriefingTracer {
-  const provider = resolveProvider(env);
+  const provider = resolveTracingProvider(env);
   if (provider === "noop") {
     return new NoopDailyBriefingTracer();
   }
