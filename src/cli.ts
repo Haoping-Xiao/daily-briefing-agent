@@ -2,14 +2,14 @@ import "dotenv/config";
 import { HelpRequested, parseCliOptions, requireCursorApiKey } from "./config.js";
 import { CursorSdkAgentClient } from "./agent/cursor-sdk-agent-client.js";
 import { CursorSdkDailyBriefingRunner } from "./agent/cursor-sdk-daily-briefing-runner.js";
-import { createLangfuseDailyBriefingTracerFromEnv } from "./observability/langfuse-tracer.js";
+import { createDailyBriefingTracerFromEnv } from "./observability/create-tracer-from-env.js";
 import { writeBriefingOutputs } from "./output/output-writer.js";
 import { createSourceRuntime } from "./pipeline/source-runtime.js";
 import { HeuristicLlmJudgeValidators } from "./validators/llm-judge-validators.js";
 import { RuleValidators } from "./validators/rule-validators.js";
 
 async function main(): Promise<void> {
-  const tracer = createLangfuseDailyBriefingTracerFromEnv();
+  const tracer = createDailyBriefingTracerFromEnv();
   try {
     const options = parseCliOptions(process.argv.slice(2));
     const apiKey = requireCursorApiKey();
