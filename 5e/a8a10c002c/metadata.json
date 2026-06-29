@@ -3,11 +3,12 @@
   "checkpoint_id": "5ea8a10c002c",
   "strategy": "manual-commit",
   "branch": "tracing",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     ".env.example",
     "README.md",
-    "src/observability/create-tracer-from-env.ts"
+    "src/observability/create-tracer-from-env.ts",
+    "tests/tracing-provider.test.ts"
   ],
   "sessions": [
     {
@@ -21,6 +22,12 @@
       "transcript": "/5e/a8a10c002c/1/full.jsonl",
       "content_hash": "/5e/a8a10c002c/1/content_hash.txt",
       "prompt": "/5e/a8a10c002c/1/prompt.txt"
+    },
+    {
+      "metadata": "/5e/a8a10c002c/2/metadata.json",
+      "transcript": "/5e/a8a10c002c/2/full.jsonl",
+      "content_hash": "/5e/a8a10c002c/2/content_hash.txt",
+      "prompt": "/5e/a8a10c002c/2/prompt.txt"
     }
   ]
 }
