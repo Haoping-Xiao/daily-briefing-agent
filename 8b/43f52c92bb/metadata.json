@@ -3,7 +3,7 @@
   "checkpoint_id": "8b43f52c92bb",
   "strategy": "manual-commit",
   "branch": "tracing",
-  "checkpoints_count": 2,
+  "checkpoints_count": 5,
   "files_touched": [
     ".env.example",
     "src/observability/create-tracer-from-env.ts",
@@ -26,6 +26,12 @@
       "transcript": "/8b/43f52c92bb/1/full.jsonl",
       "content_hash": "/8b/43f52c92bb/1/content_hash.txt",
       "prompt": "/8b/43f52c92bb/1/prompt.txt"
+    },
+    {
+      "metadata": "/8b/43f52c92bb/2/metadata.json",
+      "transcript": "/8b/43f52c92bb/2/full.jsonl",
+      "content_hash": "/8b/43f52c92bb/2/content_hash.txt",
+      "prompt": "/8b/43f52c92bb/2/prompt.txt"
     }
   ]
 }
