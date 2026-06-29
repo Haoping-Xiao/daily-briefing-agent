@@ -1,13 +1,25 @@
 import { NoopDailyBriefingTracer, type DailyBriefingTracer } from "./daily-briefing-tracer.js";
 import { OtelDailyBriefingTracer } from "./otel-daily-briefing-tracer.js";
+import { createLaminarBackend } from "./providers/laminar.js";
 import { createLangfuseBackend } from "./providers/langfuse.js";
 import { createTraceRootBackend } from "./providers/traceroot.js";
 import type { TracingBackend, TracingProviderName } from "./providers/types.js";
 
+function normalizeTracingProvider(raw: string): TracingProviderName | null {
+  if (raw === "lmnr") {
+    return "laminar";
+  }
+  if (raw === "langfuse" || raw === "traceroot" || raw === "laminar") {
+    return raw;
+  }
+  return null;
+}
+
 export function resolveTracingProvider(env: NodeJS.ProcessEnv = process.env): TracingProviderName | "noop" {
   const raw = (env.TRACING_PROVIDER ?? "langfuse").trim().toLowerCase();
-  if (raw === "langfuse" || raw === "traceroot") {
-    return raw;
+  const provider = normalizeTracingProvider(raw);
+  if (provider) {
+    return provider;
   }
   if (raw === "noop" || raw === "none" || raw === "off" || raw === "false" || raw === "disabled") {
     return "noop";
@@ -18,6 +30,9 @@ export function resolveTracingProvider(env: NodeJS.ProcessEnv = process.env): Tr
 function createBackend(provider: TracingProviderName, env: NodeJS.ProcessEnv): TracingBackend | null {
   if (provider === "langfuse") {
     return createLangfuseBackend(env);
+  }
+  if (provider === "laminar") {
+    return createLaminarBackend(env);
   }
   return createTraceRootBackend(env);
 }

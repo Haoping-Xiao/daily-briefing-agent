@@ -30,6 +30,7 @@ export class OtelDailyBriefingTracer implements DailyBriefingTracer {
   startTrace(input: DailyBriefingTraceInput): DailyBriefingTrace {
     const root = startObservationHandle(
       this.backend.provider,
+      this.backend.getTracer(),
       "daily-briefing.run",
       {
         input: {

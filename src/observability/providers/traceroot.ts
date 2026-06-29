@@ -1,11 +1,11 @@
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
-import { NodeSDK } from "@opentelemetry/sdk-node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import {
   resolveTraceRootGitContext,
   warnIfTraceRootGitContextIncomplete,
 } from "./traceroot-git-context.js";
 import { TraceRootGitSpanProcessor } from "./traceroot-span-processor.js";
+import { createIsolatedOtelBackend } from "./otel-isolated-backend.js";
 import type { TracingBackend } from "./types.js";
 
 const DEFAULT_HOST = "https://app.traceroot.ai";
@@ -31,24 +31,5 @@ export function createTraceRootBackend(env: NodeJS.ProcessEnv = process.env): Tr
     gitContext.gitRepo,
     gitContext.gitRef,
   );
-  const sdk = new NodeSDK({
-    spanProcessors: [spanProcessor],
-  });
-
-  return {
-    provider: "traceroot",
-    start() {
-      sdk.start();
-    },
-    async flush() {
-      try {
-        await spanProcessor.forceFlush();
-      } catch {}
-    },
-    async shutdown() {
-      try {
-        await sdk.shutdown();
-      } catch {}
-    },
-  };
+  return createIsolatedOtelBackend("traceroot", spanProcessor);
 }

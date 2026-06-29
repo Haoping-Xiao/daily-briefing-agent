@@ -1,5 +1,5 @@
 import { startObservation } from "@langfuse/tracing";
-import { context, SpanStatusCode, trace, type Span, type SpanContext } from "@opentelemetry/api";
+import { context, SpanStatusCode, trace, type Span, type SpanContext, type Tracer } from "@opentelemetry/api";
 import type { TracingProviderName } from "./providers/types.js";
 
 export type ObservationType =
@@ -35,10 +35,9 @@ type LangfuseObservation = {
   ): LangfuseObservation;
 };
 
-const OTEL_TRACER = trace.getTracer("daily-briefing-agent", "1.0.0");
-
 export function startObservationHandle(
   provider: TracingProviderName,
+  tracer: Tracer,
   name: string,
   attributes: ObservationAttributes,
   asType: ObservationType,
@@ -47,7 +46,7 @@ export function startObservationHandle(
   if (provider === "langfuse") {
     return createLangfuseHandle(name, attributes, asType, parent);
   }
-  return createOtelHandle(name, attributes, asType, parent);
+  return createOtelHandle(provider, tracer, name, attributes, asType, parent);
 }
 
 function createLangfuseHandle(
@@ -95,6 +94,8 @@ function getOtelSpan(raw: LangfuseObservation): Span {
 }
 
 function createOtelHandle(
+  provider: TracingProviderName,
+  tracer: Tracer,
   name: string,
   attributes: ObservationAttributes,
   asType: ObservationType,
@@ -104,23 +105,27 @@ function createOtelHandle(
   const parentContext = otelParent
     ? trace.setSpan(context.active(), otelParent.span)
     : context.active();
-  const span = OTEL_TRACER.startSpan(
+  const span = tracer.startSpan(
     name,
     {
-      attributes: buildTraceRootAttributes(asType, attributes),
+      attributes: buildOtelSpanAttributes(provider, asType, attributes),
     },
     parentContext,
   );
-  applyObservationLevel(span, attributes);
-  return new OtelObservationHandle(span);
+  applyObservationLevel(provider, span, attributes);
+  return new OtelObservationHandle(provider, tracer, span);
 }
 
 class OtelObservationHandle implements ObservationHandle {
-  constructor(readonly span: Span) {}
+  constructor(
+    private readonly provider: TracingProviderName,
+    private readonly tracer: Tracer,
+    readonly span: Span,
+  ) {}
 
   update(attributes: ObservationAttributes & Record<string, unknown>): void {
-    this.span.setAttributes(buildTraceRootAttributes(undefined, attributes));
-    applyObservationLevel(this.span, attributes);
+    this.span.setAttributes(buildOtelSpanAttributes(this.provider, undefined, attributes));
+    applyObservationLevel(this.provider, this.span, attributes);
   }
 
   end(): void {
@@ -128,8 +133,52 @@ class OtelObservationHandle implements ObservationHandle {
   }
 
   startChild(name: string, attributes: ObservationAttributes, asType: ObservationType): ObservationHandle {
-    return createOtelHandle(name, attributes, asType, this);
+    return createOtelHandle(this.provider, this.tracer, name, attributes, asType, this);
   }
+}
+
+function buildOtelSpanAttributes(
+  provider: TracingProviderName,
+  asType: ObservationType | undefined,
+  attributes: ObservationAttributes & Record<string, unknown>,
+): Record<string, string> {
+  if (provider === "laminar") {
+    return buildLaminarAttributes(asType, attributes);
+  }
+  return buildTraceRootAttributes(asType, attributes);
+}
+
+function buildLaminarAttributes(
+  asType: ObservationType | undefined,
+  attributes: ObservationAttributes & Record<string, unknown>,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (asType) {
+    result["lmnr.span.type"] = mapLaminarSpanType(asType);
+  }
+  if (attributes.input !== undefined) {
+    result["lmnr.span.input"] = serializeAttribute(attributes.input);
+  }
+  if (attributes.output !== undefined) {
+    result["lmnr.span.output"] = serializeAttribute(attributes.output);
+  }
+  if (attributes.metadata) {
+    for (const [key, value] of Object.entries(attributes.metadata)) {
+      if (asType) {
+        result[`lmnr.association.properties.metadata.${key}`] = serializeAttribute(value);
+      } else {
+        result[`lmnr.span.metadata.${key}`] = serializeAttribute(value);
+      }
+    }
+  }
+  if (attributes.statusMessage) {
+    if (asType) {
+      result["lmnr.association.properties.metadata.statusMessage"] = attributes.statusMessage;
+    } else {
+      result["lmnr.span.metadata.statusMessage"] = attributes.statusMessage;
+    }
+  }
+  return result;
 }
 
 function buildTraceRootAttributes(
@@ -170,7 +219,22 @@ function mapTraceRootSpanType(asType: ObservationType): string {
   }
 }
 
-function applyObservationLevel(span: Span, attributes: ObservationAttributes): void {
+function mapLaminarSpanType(asType: ObservationType): string {
+  switch (asType) {
+    case "tool":
+      return "TOOL";
+    case "generation":
+      return "LLM";
+    default:
+      return "DEFAULT";
+  }
+}
+
+function applyObservationLevel(
+  provider: TracingProviderName,
+  span: Span,
+  attributes: ObservationAttributes,
+): void {
   if (attributes.level === "ERROR") {
     span.setStatus({
       code: SpanStatusCode.ERROR,
@@ -179,7 +243,11 @@ function applyObservationLevel(span: Span, attributes: ObservationAttributes): v
     return;
   }
   if (attributes.level === "WARNING" && attributes.statusMessage) {
-    span.setAttribute("traceroot.span.metadata.level", "WARNING");
+    const levelKey =
+      provider === "laminar"
+        ? "lmnr.association.properties.metadata.level"
+        : "traceroot.span.metadata.level";
+    span.setAttribute(levelKey, "WARNING");
   }
 }
 

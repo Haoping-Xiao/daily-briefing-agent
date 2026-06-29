@@ -9,6 +9,8 @@ describe("resolveTracingProvider", () => {
   it("selects configured providers", () => {
     expect(resolveTracingProvider({ TRACING_PROVIDER: "traceroot" })).toBe("traceroot");
     expect(resolveTracingProvider({ TRACING_PROVIDER: "Langfuse" })).toBe("langfuse");
+    expect(resolveTracingProvider({ TRACING_PROVIDER: "laminar" })).toBe("laminar");
+    expect(resolveTracingProvider({ TRACING_PROVIDER: "lmnr" })).toBe("laminar");
   });
 
   it("treats disable aliases as noop", () => {
