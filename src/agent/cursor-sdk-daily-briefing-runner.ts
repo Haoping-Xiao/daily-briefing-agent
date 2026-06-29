@@ -88,7 +88,10 @@ export class CursorSdkDailyBriefingRunner {
         }
         current = { ...current, validationIssues: issues };
         if (attempt === this.options.maxRevisions) {
-          throw new Error(`Briefing failed validation after ${this.options.maxRevisions} revision attempts.`);
+          throw new Error(
+            `Briefing failed validation after ${this.options.maxRevisions} revision attempt(s). ` +
+              `Increase --max-revisions to allow automatic retries.`,
+          );
         }
         revisionCount += 1;
         const revised = await this.sendAndParse(

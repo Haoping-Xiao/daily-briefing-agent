@@ -16,7 +16,6 @@ export function createLangfuseBackend(env: NodeJS.ProcessEnv = process.env): Tra
     publicKey,
     secretKey,
     baseUrl: baseUrl || undefined,
-    exportMode: "immediate",
     mask: ({ data }) => redactSecrets(data),
   });
   const sdk = new NodeSDK({

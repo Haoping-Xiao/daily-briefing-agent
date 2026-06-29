@@ -1,3 +1,17 @@
+/**
+ * Provider-agnostic helpers for daily-briefing tracing.
+ *
+ * This module is not tied to Langfuse, TraceRoot, or any export backend. It prepares
+ * domain data before it is written into spans (truncate large payloads, aggregate Cursor
+ * SDK stream events, normalize tool names) and redacts secrets before export.
+ *
+ * Used by:
+ * - otel-daily-briefing-tracer.ts — most helpers when building span input/output
+ * - providers/langfuse.ts — redactSecrets in LangfuseSpanProcessor mask callback
+ *
+ * Span lifecycle (start / update / end) lives in otel-daily-briefing-tracer.ts;
+ * provider wiring lives under providers/.
+ */
 import type { SDKMessage } from "@cursor/sdk";
 import type { AgentRunPayload } from "../agent/types.js";
 

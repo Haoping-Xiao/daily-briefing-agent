@@ -95,10 +95,74 @@ function normalizeModelOperationBatch(value: unknown): unknown {
 
 function normalizeJudgment(value: unknown): unknown {
   if (!value || typeof value !== "object") return value;
-  const judgment = value as { schema?: unknown; topicTags?: unknown };
-  if (judgment.schema !== "ModelRelevanceJudgment" || !Array.isArray(judgment.topicTags)) return value;
-  return {
-    ...value,
-    topicTags: judgment.topicTags.filter((tag): tag is TopicTag => typeof tag === "string" && topicTagSet.has(tag)),
+  const judgment = value as {
+    schema?: unknown;
+    topicTags?: unknown;
+    restrictedFacts?: unknown;
+    speakableFacts?: unknown;
   };
+
+  let next: Record<string, unknown> = { ...(value as Record<string, unknown>) };
+
+  if (judgment.schema === "ModelRelevanceJudgment" && Array.isArray(judgment.topicTags)) {
+    next = {
+      ...next,
+      topicTags: judgment.topicTags.filter((tag): tag is TopicTag => typeof tag === "string" && topicTagSet.has(tag)),
+    };
+  }
+
+  if (judgment.schema === "ModelPrivacyJudgment") {
+    if (judgment.restrictedFacts !== undefined) {
+      next.restrictedFacts = normalizeRestrictedFacts(judgment.restrictedFacts);
+    }
+    if (judgment.speakableFacts !== undefined) {
+      next.speakableFacts = normalizeSpeakableFacts(judgment.speakableFacts);
+    }
+  }
+
+  return next;
+}
+
+function normalizeRestrictedFacts(value: unknown): Array<{ redactedLabel: string; reason: string }> {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (typeof item === "string" && item.trim()) {
+      return [{ redactedLabel: item, reason: item }];
+    }
+    if (item && typeof item === "object") {
+      const record = item as Record<string, unknown>;
+      const redactedLabel = pickString(record, ["redactedLabel", "label", "name"]);
+      const reason = pickString(record, ["reason", "description"]) ?? redactedLabel;
+      if (redactedLabel) {
+        return [{ redactedLabel, reason: reason ?? redactedLabel }];
+      }
+    }
+    return [];
+  });
+}
+
+function normalizeSpeakableFacts(value: unknown): Array<{ raw: string; spoken: string }> {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (typeof item === "string" && item.trim()) {
+      return [{ raw: item, spoken: item }];
+    }
+    if (item && typeof item === "object") {
+      const record = item as Record<string, unknown>;
+      const raw = pickString(record, ["raw", "text", "value"]);
+      const spoken = pickString(record, ["spoken", "tts", "speech"]) ?? raw;
+      if (raw && spoken) {
+        return [{ raw, spoken }];
+      }
+    }
+    return [];
+  });
+}
+
+function pickString(record: Record<string, unknown>, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value;
+  }
+  return undefined;
 }

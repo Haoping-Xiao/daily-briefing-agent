@@ -1,5 +1,5 @@
 import { startObservation } from "@langfuse/tracing";
-import { context, SpanStatusCode, trace, type Span } from "@opentelemetry/api";
+import { context, SpanStatusCode, trace, type Span, type SpanContext } from "@opentelemetry/api";
 import type { TracingProviderName } from "./providers/types.js";
 
 export type ObservationType =
@@ -57,14 +57,23 @@ function createLangfuseHandle(
   parent?: ObservationHandle,
 ): ObservationHandle {
   const langfuseParent = parent as LangfuseObservationHandle | undefined;
-  const observation = langfuseParent
-    ? (langfuseParent.raw.startObservation(name, attributes, { asType }) as LangfuseObservation)
-    : (startObservation(name, attributes, { asType: asType as never }) as LangfuseObservation);
+  const observation = startObservation(name, attributes, {
+    asType: asType as never,
+    ...(langfuseParent ? { parentSpanContext: langfuseParent.spanContext() } : {}),
+  }) as LangfuseObservation;
   return new LangfuseObservationHandle(observation);
 }
 
 class LangfuseObservationHandle implements ObservationHandle {
-  constructor(readonly raw: LangfuseObservation) {}
+  private readonly otelSpan: Span;
+
+  constructor(readonly raw: LangfuseObservation) {
+    this.otelSpan = getOtelSpan(raw);
+  }
+
+  spanContext(): SpanContext {
+    return this.otelSpan.spanContext();
+  }
 
   update(attributes: ObservationAttributes & Record<string, unknown>): void {
     this.raw.update(attributes);
@@ -75,8 +84,14 @@ class LangfuseObservationHandle implements ObservationHandle {
   }
 
   startChild(name: string, attributes: ObservationAttributes, asType: ObservationType): ObservationHandle {
-    return createLangfuseHandle(name, attributes, asType, this);
+    return context.with(trace.setSpan(context.active(), this.otelSpan), () =>
+      createLangfuseHandle(name, attributes, asType, this),
+    );
   }
+}
+
+function getOtelSpan(raw: LangfuseObservation): Span {
+  return (raw as LangfuseObservation & { otelSpan: Span }).otelSpan;
 }
 
 function createOtelHandle(

@@ -44,6 +44,29 @@ describe("model operation schemas", () => {
 
     expect(judgments[0]).toMatchObject({ schema: "ModelRelevanceJudgment", topicTags: ["company_launch"] });
   });
+
+  it("coerces string privacy facts from model output into structured objects", () => {
+    const judgments = parseModelOperationBatch(JSON.stringify({
+      judgments: [
+        {
+          schema: "ModelPrivacyJudgment",
+          operationId: "model_email_privacy",
+          candidateId: "em_020",
+          hasPrivacyRisk: true,
+          restrictedFacts: ["medical appointment details"],
+          speakableFacts: ["Personal appointment on the calendar."],
+          reason: "Medical details must stay private.",
+          confidence: 0.91,
+        },
+      ],
+    }));
+
+    expect(judgments[0]).toMatchObject({
+      schema: "ModelPrivacyJudgment",
+      restrictedFacts: [{ redactedLabel: "medical appointment details", reason: "medical appointment details" }],
+      speakableFacts: [{ raw: "Personal appointment on the calendar.", spoken: "Personal appointment on the calendar." }],
+    });
+  });
 });
 
 describe("ModelOperationEnhancer", () => {
