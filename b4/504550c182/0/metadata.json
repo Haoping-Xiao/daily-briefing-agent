@@ -1,0 +1,133 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "b4504550c182",
+  "session_id": "6692530f-ad8f-4034-8397-3f85cb52dc88",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-30T03:10:13.585683Z",
+  "branch": "tracing",
+  "checkpoints_count": 12,
+  "files_touched": [
+    ".env.example",
+    "README.md",
+    "src/observability/braintrust-topics-format.ts",
+    "src/observability/create-tracer-from-env.ts",
+    "src/observability/observation-handle.ts",
+    "src/observability/otel-daily-briefing-tracer.ts",
+    "src/observability/providers/braintrust.ts",
+    "src/observability/providers/types.ts",
+    "tests/braintrust-provider.test.ts",
+    "tests/braintrust-topics-format.test.ts",
+    "tests/tracing-provider.test.ts"
+  ],
+  "agent": "Cursor",
+  "model": "composer-2.5-fast",
+  "turn_id": "0def56b54d9f",
+  "session_metrics": {
+    "turn_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-30T03:10:13.566402Z",
+    "agent_lines": 451,
+    "agent_removed": 65,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 451,
+    "total_lines_changed": 516,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 164,
+      "agent_lines_removed": 4
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 164,
+      "agent_lines_removed": 4
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 164,
+      "agent_lines_removed": 4
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 164,
+      "agent_lines_removed": 4
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 164,
+      "agent_lines_removed": 4
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 179,
+      "agent_lines_removed": 11
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 179,
+      "agent_lines_removed": 11
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 236,
+      "agent_lines_removed": 11
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 179,
+      "agent_lines_removed": 11
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 179,
+      "agent_lines_removed": 11
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 451,
+      "agent_lines_removed": 65
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+curl -fsSL https://www.braintrust.dev/wizard/setup.sh | sh -s -- --app-url https://www.braintrust.dev --api-url https://api.braintrust.dev --org-id 24e6c825-03d2-48bd-9127-cb02c6102f14 --proj-id 4f78dab5-e707-4037-bd9c-e3dbe9e17a86
+
+add a tracing provider for braintrust. 使用上面的命令作为参考，架构的话遵循我们的方案，opentelemetry.
+
+---
+
+curl -fsSL https://www.braintrust.dev/wizard/setup.sh | sh -s -- --app-url https://www.braintrust.dev --api-url https://api.braintrust.dev --org-id 24e6c825-03d2-48bd-9127-cb02c6102f14 --proj-id 4f78dab5-e707-4037-bd9c-e3dbe9e17a86
+
+add a tracing provider for braintrust. 使用上面的命令作为参考，架构的话遵循我们的方案，opentelemetry.
+
+---
+
+现在有 api key 吗
+
+---
+
+好了，你试试
+
+---
+
+之前 langfuse , traceroot 为啥需要
+
+---
+
+之前 langfuse , traceroot 为啥需要环境变量，我们是不是保持统一好点。
+
+---
+
+注释一下
+
+---
+
+好的，跑下完整的
+
+---
+
+I need at least 100 Traces。 please help me generate some traces 不管啥手段。
+
+---
+
+这个脚本删了，没啥用。
+https://www.braintrust.dev/blog/topics  我想要试用这个功能。请你生成有意义有数据的 100 条 traces.
+
+---
+
+看不到啊，你能访问浏览器，或者 cli 连接 帮我看看吗
+
+---
+
+嗯
