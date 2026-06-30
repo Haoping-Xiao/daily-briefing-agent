@@ -1,6 +1,6 @@
 import type { Tracer } from "@opentelemetry/api";
 
-export type TracingProviderName = "langfuse" | "traceroot" | "laminar";
+export type TracingProviderName = "langfuse" | "traceroot" | "laminar" | "braintrust";
 
 export interface TracingBackend {
   readonly provider: TracingProviderName;

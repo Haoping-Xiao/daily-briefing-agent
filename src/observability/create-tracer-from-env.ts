@@ -1,5 +1,6 @@
 import { NoopDailyBriefingTracer, type DailyBriefingTracer } from "./daily-briefing-tracer.js";
 import { OtelDailyBriefingTracer } from "./otel-daily-briefing-tracer.js";
+import { createBraintrustBackend } from "./providers/braintrust.js";
 import { createLaminarBackend } from "./providers/laminar.js";
 import { createLangfuseBackend } from "./providers/langfuse.js";
 import { createTraceRootBackend } from "./providers/traceroot.js";
@@ -9,7 +10,10 @@ function normalizeTracingProvider(raw: string): TracingProviderName | null {
   if (raw === "lmnr") {
     return "laminar";
   }
-  if (raw === "langfuse" || raw === "traceroot" || raw === "laminar") {
+  if (raw === "bt") {
+    return "braintrust";
+  }
+  if (raw === "langfuse" || raw === "traceroot" || raw === "laminar" || raw === "braintrust") {
     return raw;
   }
   return null;
@@ -33,6 +37,9 @@ function createBackend(provider: TracingProviderName, env: NodeJS.ProcessEnv): T
   }
   if (provider === "laminar") {
     return createLaminarBackend(env);
+  }
+  if (provider === "braintrust") {
+    return createBraintrustBackend(env);
   }
   return createTraceRootBackend(env);
 }

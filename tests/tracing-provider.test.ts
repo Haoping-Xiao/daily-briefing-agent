@@ -11,6 +11,8 @@ describe("resolveTracingProvider", () => {
     expect(resolveTracingProvider({ TRACING_PROVIDER: "Langfuse" })).toBe("langfuse");
     expect(resolveTracingProvider({ TRACING_PROVIDER: "laminar" })).toBe("laminar");
     expect(resolveTracingProvider({ TRACING_PROVIDER: "lmnr" })).toBe("laminar");
+    expect(resolveTracingProvider({ TRACING_PROVIDER: "braintrust" })).toBe("braintrust");
+    expect(resolveTracingProvider({ TRACING_PROVIDER: "bt" })).toBe("braintrust");
   });
 
   it("treats disable aliases as noop", () => {

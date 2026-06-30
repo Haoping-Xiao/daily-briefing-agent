@@ -1,5 +1,9 @@
 import type { RunResult, SDKMessage, SendOptions } from "@cursor/sdk";
 import type { AgentRunPayload } from "../agent/types.js";
+import {
+  braintrustAgentRunInput,
+  braintrustBriefingRequestInput,
+} from "./braintrust-topics-format.js";
 import type {
   AgentRunTrace,
   AgentRunTraceInput,
@@ -11,7 +15,7 @@ import type {
   ValidationAttemptObservation,
 } from "./daily-briefing-tracer.js";
 import { startObservationHandle, type ObservationHandle } from "./observation-handle.js";
-import type { TracingBackend } from "./providers/types.js";
+import type { TracingBackend, TracingProviderName } from "./providers/types.js";
 import {
   appendStreamEvent,
   createStreamSummary,
@@ -24,27 +28,59 @@ import {
   truncate,
 } from "./tracing-utils.js";
 
+function traceInput(
+  provider: TracingProviderName,
+  input: DailyBriefingTraceInput,
+): Record<string, unknown> {
+  if (provider === "braintrust") {
+    return { input: braintrustBriefingRequestInput(input) };
+  }
+  return {
+    input: {
+      briefingDate: input.briefingDate,
+      inputDir: input.inputDir,
+    },
+  };
+}
+
+function agentRunInput(
+  provider: TracingProviderName,
+  input: AgentRunTraceInput,
+): Record<string, unknown> {
+  if (provider === "braintrust") {
+    return { input: braintrustAgentRunInput(input) };
+  }
+  return {
+    input: {
+      kind: input.kind,
+      attempt: input.attempt,
+      promptLength: input.prompt.length,
+      promptPreview: truncate(input.prompt, 2000),
+    },
+  };
+}
+
 export class OtelDailyBriefingTracer implements DailyBriefingTracer {
   constructor(private readonly backend: TracingBackend) {}
 
   startTrace(input: DailyBriefingTraceInput): DailyBriefingTrace {
+    const provider = this.backend.provider;
     const root = startObservationHandle(
-      this.backend.provider,
+      provider,
       this.backend.getTracer(),
       "daily-briefing.run",
       {
-        input: {
+        ...traceInput(provider, input),
+        metadata: {
           briefingDate: input.briefingDate,
           inputDir: input.inputDir,
-        },
-        metadata: {
           model: input.model,
           maxRevisions: input.maxRevisions,
         },
       },
       "agent",
     );
-    return new OtelDailyBriefingTrace(root, input);
+    return new OtelDailyBriefingTrace(provider, root, input);
   }
 
   async flush(): Promise<void> {
@@ -61,6 +97,7 @@ class OtelDailyBriefingTrace implements DailyBriefingTrace {
   private validationIssueCount = 0;
 
   constructor(
+    private readonly provider: TracingProviderName,
     private readonly root: ObservationHandle,
     private readonly input: DailyBriefingTraceInput,
   ) {}
@@ -85,7 +122,7 @@ class OtelDailyBriefingTrace implements DailyBriefingTrace {
   }
 
   startAgentRun(input: AgentRunTraceInput): AgentRunTrace {
-    return new OtelAgentRunTrace(this.root, input);
+    return new OtelAgentRunTrace(this.provider, this.root, input);
   }
 
   recordValidationAttempt(summary: ValidationAttemptObservation): void {
@@ -107,30 +144,39 @@ class OtelDailyBriefingTrace implements DailyBriefingTrace {
   }
 
   recordFinalResult(result: FinalResultObservation): void {
+    const structuredOutput = {
+      status: "finished",
+      revisionCount: result.revisionCount,
+      outline: result.outline,
+      draft: summarizeDraft(result.draft),
+    };
     this.root.update({
-      output: {
-        status: "finished",
-        revisionCount: result.revisionCount,
-        outline: result.outline,
-        draft: summarizeDraft(result.draft),
-      },
+      output:
+        this.provider === "braintrust"
+          ? result.draft.finalTtsText
+          : structuredOutput,
       metadata: {
         durationMs: Date.now() - this.startedAt,
         validationIssueCount: this.validationIssueCount,
         finalTextLength: result.draft.finalTtsText.length,
         sectionCount: result.draft.sections.length,
+        ...(this.provider === "braintrust" ? { structuredOutput } : {}),
       },
     });
   }
 
   recordError(error: unknown): void {
+    const message = errorMessage(error);
     this.root.update({
       level: "ERROR",
-      statusMessage: errorMessage(error),
-      output: {
-        status: "error",
-        error: errorMessage(error),
-      },
+      statusMessage: message,
+      output:
+        this.provider === "braintrust"
+          ? message
+          : {
+              status: "error",
+              error: message,
+            },
     });
   }
 
@@ -158,21 +204,19 @@ class OtelAgentRunTrace implements AgentRunTrace {
   private readonly streamSummary = createStreamSummary();
 
   constructor(
+    private readonly provider: TracingProviderName,
     parent: ObservationHandle,
     private readonly input: AgentRunTraceInput,
   ) {
     this.span = parent.startChild(
       `cursor-sdk.${input.kind}`,
       {
-        input: {
-          kind: input.kind,
-          attempt: input.attempt,
-          promptLength: input.prompt.length,
-          promptPreview: truncate(input.prompt, 2000),
-        },
+        ...agentRunInput(provider, input),
         metadata: {
           agentId: input.agentId,
           model: input.model,
+          kind: input.kind,
+          attempt: input.attempt,
         },
       },
       "agent",
@@ -189,20 +233,26 @@ class OtelAgentRunTrace implements AgentRunTrace {
   }
 
   recordRunResult(result: RunResult): void {
+    const preview = truncate(result.result ?? "", 4000);
+    const structuredOutput = {
+      runId: result.id,
+      status: result.status,
+      resultPreview: preview,
+      durationMs: result.durationMs,
+      git: result.git,
+    };
     this.span.update({
-      output: {
-        runId: result.id,
-        status: result.status,
-        resultPreview: truncate(result.result ?? "", 4000),
-        durationMs: result.durationMs,
-        git: result.git,
-      },
+      output:
+        this.provider === "braintrust" && preview
+          ? preview
+          : structuredOutput,
       metadata: {
         toolNames: [...this.toolNames],
         deltaCount: this.deltaCount,
         stepCount: this.stepCount,
         usageDetails: this.usageDetails,
         streamEventCounts: this.streamSummary.counts,
+        ...(this.provider === "braintrust" ? { structuredOutput } : {}),
       },
     });
   }
@@ -226,7 +276,10 @@ class OtelAgentRunTrace implements AgentRunTrace {
     const draft = this.span.startChild(
       "agent-output.draft",
       {
-        output: summarizeDraft(payload.draft),
+        output:
+          this.provider === "braintrust"
+            ? payload.draft.finalTtsText
+            : summarizeDraft(payload.draft),
         metadata: {
           sectionCount: payload.draft.sections.length,
           finalTextLength: payload.draft.finalTtsText.length,
@@ -235,16 +288,26 @@ class OtelAgentRunTrace implements AgentRunTrace {
       "generation",
     );
     draft.end();
+
+    if (this.provider === "braintrust") {
+      this.span.update({
+        output: payload.draft.finalTtsText,
+      });
+    }
   }
 
   recordError(error: unknown): void {
+    const message = errorMessage(error);
     this.span.update({
       level: "ERROR",
-      statusMessage: errorMessage(error),
-      output: {
-        status: "error",
-        error: errorMessage(error),
-      },
+      statusMessage: message,
+      output:
+        this.provider === "braintrust"
+          ? `Agent run failed: ${message}`
+          : {
+              status: "error",
+              error: message,
+            },
     });
   }
 
@@ -267,17 +330,21 @@ class OtelAgentRunTrace implements AgentRunTrace {
     const totalEvents = Object.values(this.streamSummary.counts).reduce((sum, count) => sum + count, 0);
     if (totalEvents === 0) return;
 
+    const assistantText = truncate(this.streamSummary.assistantText.join(""), 12000);
     const summary = this.span.startChild(
       "cursor-events.summary",
       {
-        output: {
-          counts: this.streamSummary.counts,
-          assistantText: truncate(this.streamSummary.assistantText.join(""), 12000),
-          thinkingText: truncate(this.streamSummary.thinkingText.join(""), 8000),
-          statuses: this.streamSummary.statuses,
-          tasks: this.streamSummary.tasks,
-          requests: this.streamSummary.requests,
-        },
+        output:
+          this.provider === "braintrust" && assistantText
+            ? assistantText
+            : {
+                counts: this.streamSummary.counts,
+                assistantText,
+                thinkingText: truncate(this.streamSummary.thinkingText.join(""), 8000),
+                statuses: this.streamSummary.statuses,
+                tasks: this.streamSummary.tasks,
+                requests: this.streamSummary.requests,
+              },
         metadata: {
           totalEvents,
           assistantEventCount: this.streamSummary.counts.assistant ?? 0,
@@ -313,10 +380,19 @@ class OtelAgentRunTrace implements AgentRunTrace {
       const observation = this.span.startChild(
         `tool.${toolName}`,
         {
-          input: {
-            args: event.args,
-            callId: event.call_id,
-          },
+          input:
+            this.provider === "braintrust"
+              ? braintrustAgentRunInput({
+                  kind: this.input.kind,
+                  attempt: this.input.attempt,
+                  prompt: `Call tool ${toolName} with ${JSON.stringify(event.args)}`,
+                  agentId: this.input.agentId,
+                  model: this.input.model,
+                })
+              : {
+                  args: event.args,
+                  callId: event.call_id,
+                },
           metadata: {
             runId: event.run_id,
             status: event.status,
@@ -330,12 +406,18 @@ class OtelAgentRunTrace implements AgentRunTrace {
       this.toolCalls.set(event.call_id, tool);
     }
 
+    const resultText = JSON.stringify(summarizeToolResult(event.result));
     tool.observation.update({
-      output: {
-        status: event.status,
-        result: summarizeToolResult(event.result),
-        truncated: event.truncated,
-      },
+      output:
+        this.provider === "braintrust"
+          ? event.status === "error"
+            ? `Tool ${toolName} failed: ${resultText}`
+            : `Tool ${toolName} result: ${resultText}`
+          : {
+              status: event.status,
+              result: summarizeToolResult(event.result),
+              truncated: event.truncated,
+            },
       metadata: {
         status: event.status,
         truncated: event.truncated,

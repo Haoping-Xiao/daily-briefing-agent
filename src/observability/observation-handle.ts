@@ -1,6 +1,9 @@
 import { startObservation } from "@langfuse/tracing";
 import { context, SpanStatusCode, trace, type Span, type SpanContext, type Tracer } from "@opentelemetry/api";
 import type { TracingProviderName } from "./providers/types.js";
+import {
+  isBraintrustAssistantOutput,
+} from "./braintrust-topics-format.js";
 
 export type ObservationType =
   | "agent"
@@ -145,6 +148,9 @@ function buildOtelSpanAttributes(
   if (provider === "laminar") {
     return buildLaminarAttributes(asType, attributes);
   }
+  if (provider === "braintrust") {
+    return buildBraintrustAttributes(asType, attributes);
+  }
   return buildTraceRootAttributes(asType, attributes);
 }
 
@@ -179,6 +185,84 @@ function buildLaminarAttributes(
     }
   }
   return result;
+}
+
+function buildBraintrustAttributes(
+  asType: ObservationType | undefined,
+  attributes: ObservationAttributes & Record<string, unknown>,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (asType) {
+    result["braintrust.span_attributes.type"] = mapBraintrustSpanType(asType);
+  }
+
+  const prompt = extractBraintrustPrompt(attributes.input);
+  const completion = extractBraintrustCompletion(attributes.output);
+  if (prompt) {
+    result["gen_ai.prompt"] = prompt;
+  }
+  if (completion) {
+    result["gen_ai.completion"] = completion;
+  }
+
+  if (attributes.input !== undefined && !prompt) {
+    result["braintrust.input_json"] = serializeAttribute(attributes.input);
+  }
+  if (attributes.output !== undefined && !completion) {
+    if (isBraintrustAssistantOutput(attributes.output)) {
+      result["braintrust.output"] = attributes.output.content;
+    } else {
+      result["braintrust.output_json"] = serializeAttribute(attributes.output);
+    }
+  }
+  if (attributes.metadata) {
+    for (const [key, value] of Object.entries(attributes.metadata)) {
+      result[`braintrust.metadata.${key}`] = serializeAttribute(value);
+    }
+  }
+  if (attributes.statusMessage) {
+    result["braintrust.metadata.statusMessage"] = attributes.statusMessage;
+  }
+  return result;
+}
+
+function extractBraintrustPrompt(input: unknown): string | null {
+  if (typeof input === "string" && input.trim()) {
+    return input;
+  }
+  if (Array.isArray(input)) {
+    const userMessages = input
+      .filter((item): item is { role: string; content: string } => isRecord(item) && item.role === "user" && typeof item.content === "string")
+      .map((item) => item.content.trim())
+      .filter(Boolean);
+    if (userMessages.length > 0) {
+      return userMessages.join("\n\n");
+    }
+  }
+  return null;
+}
+
+function extractBraintrustCompletion(output: unknown): string | null {
+  if (typeof output === "string" && output.trim()) {
+    return output;
+  }
+  if (isBraintrustAssistantOutput(output)) {
+    return output.content;
+  }
+  if (Array.isArray(output)) {
+    const assistantMessages = output
+      .filter((item): item is { role: string; content: string } => isRecord(item) && item.role === "assistant" && typeof item.content === "string")
+      .map((item) => item.content.trim())
+      .filter(Boolean);
+    if (assistantMessages.length > 0) {
+      return assistantMessages.join("\n\n");
+    }
+  }
+  return null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function buildTraceRootAttributes(
@@ -230,6 +314,21 @@ function mapLaminarSpanType(asType: ObservationType): string {
   }
 }
 
+function mapBraintrustSpanType(asType: ObservationType): string {
+  switch (asType) {
+    case "agent":
+      return "task";
+    case "tool":
+      return "tool";
+    case "generation":
+      return "llm";
+    case "evaluator":
+      return "score";
+    default:
+      return "task";
+  }
+}
+
 function applyObservationLevel(
   provider: TracingProviderName,
   span: Span,
@@ -246,7 +345,9 @@ function applyObservationLevel(
     const levelKey =
       provider === "laminar"
         ? "lmnr.association.properties.metadata.level"
-        : "traceroot.span.metadata.level";
+        : provider === "braintrust"
+          ? "braintrust.metadata.level"
+          : "traceroot.span.metadata.level";
     span.setAttribute(levelKey, "WARNING");
   }
 }

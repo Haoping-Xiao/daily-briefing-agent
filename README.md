@@ -14,6 +14,8 @@ Tracing is optional. Set `TRACING_PROVIDER` to choose the backend:
 
 - `langfuse` (default)
 - `traceroot`
+- `laminar` (`lmnr`)
+- `braintrust` (`bt`)
 - `noop` (also `none`, `off`, `false`, `disabled`)
 
 If the selected provider is missing required API keys, tracing falls back to a no-op tracer.
